@@ -1,5 +1,4 @@
 public class SpecialCharacterExamples {
-
     public static void main(String [] args) {
         String stringWithNewline = "Hello\nBYU";
         System.out.println(stringWithNewline);
