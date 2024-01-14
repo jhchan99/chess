@@ -2,7 +2,7 @@ package passoffTests.chessTests.chessPieceTests;
 
 import org.junit.jupiter.api.Test;
 
-import static passoffTests.TestFactory.*;
+import static passoffTests.chessTests.TestFactory.*;
 
 public class KnightMoveTests {
 
