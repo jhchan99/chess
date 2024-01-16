@@ -31,4 +31,6 @@ public class ChessPosition {
         return column;
     }
 
+
+
 }

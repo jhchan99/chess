@@ -3,6 +3,7 @@ package passoffTests.chessTests.chessPieceTests;
 import chess.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import passoffTests.chessTests.TestFactory;
 
 import java.util.HashSet;
 

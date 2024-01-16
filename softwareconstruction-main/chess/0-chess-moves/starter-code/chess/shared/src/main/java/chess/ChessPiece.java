@@ -3,6 +3,8 @@ package chess;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * Represents a single chess piece
@@ -47,6 +49,9 @@ public class ChessPiece {
         return piece;
     }
 
+
+
+
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -55,7 +60,18 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> moves = new ArrayList<ChessMove>();
+       /*
 
-        return new ArrayList<>();
+        */
+//        if (!validMove) {
+//            return null;
+//        }else {
+//            moves = moves[myPosition.getRow()][myPosition.getRow()];
+//        }
+
+        throw new RuntimeException("not implemented");
+
     }
+
 }
