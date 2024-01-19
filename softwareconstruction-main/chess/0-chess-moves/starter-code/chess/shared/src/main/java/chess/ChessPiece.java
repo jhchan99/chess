@@ -73,6 +73,7 @@ public class ChessPiece {
         if(type == PieceType.ROOK) {
             return rookMoves(board, myPosition);
         }
+
         if(type == PieceType.QUEEN){
             return queenMoves(board, myPosition);
         }
@@ -145,6 +146,47 @@ public class ChessPiece {
         }
        return kingMoves;
     }
+
+    public Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> pawnMoves = new HashSet<>();
+        int startRow = myPosition.getRow();
+        int startCol = myPosition.getColumn();
+
+        addPawnMovesInDirection(pawnMoves, board, myPosition, startRow, startCol, 1,0);
+        addPawnMovesInDirection(pawnMoves, board, myPosition, startRow, startCol, 1,1);
+        addPawnMovesInDirection(pawnMoves, board, myPosition, startRow, startCol, 2,0);
+        addPawnMovesInDirection(pawnMoves, board, myPosition, startRow, startCol, 1,-1);
+
+        return pawnMoves;
+
+    }
+
+    public void addPawnMovesInDirection(Collection<ChessMove> pawnMoves, ChessBoard board, ChessPosition myPosition, int startRow, int startCol, int rowDelta, int colDelta) {
+        int row = startRow;
+        int col = startCol;
+
+        while (row >= 1 && row < 8 && col >= 1 && col < 8) {
+            row += rowDelta;
+            col += colDelta;
+
+            if (row < 1 || row > 8 || col < 1 || col > 8) {
+                break; // Ensure the position is within the board
+            }
+
+            ChessPosition newPosition = new ChessPosition(row, col);
+            ChessPiece pieceAtNewPosition = board.getPiece(newPosition);
+            if (pieceAtNewPosition == null) {
+                pawnMoves.add(new ChessMove(myPosition, newPosition, null));
+            } else {
+                if (pieceAtNewPosition.getTeamColor() != board.getPiece(myPosition).getTeamColor()){
+                    pawnMoves.add(new ChessMove(myPosition, newPosition, null));
+                }
+                break;
+            }
+
+        }
+    }
+
 
     public Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> rookMoves = new HashSet<>();
