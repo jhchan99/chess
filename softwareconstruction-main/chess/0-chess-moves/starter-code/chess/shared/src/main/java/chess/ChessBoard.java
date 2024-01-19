@@ -14,8 +14,8 @@ public class ChessBoard {
     //ChessPiece.PieceType piece  = ChessPiece.PieceType.KING;
 
     public ChessBoard() {
-        resetBoard();
-   }
+
+    }
 
     /**
      * Adds a chess piece to the chessboard
