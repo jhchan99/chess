@@ -8,11 +8,10 @@
         <outputRelativeToContentRoot value="true" />
         <module name="client" />
         <module name="server" />
-        <module name="shared" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="chess" target="21" />
+      <module name="shared" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

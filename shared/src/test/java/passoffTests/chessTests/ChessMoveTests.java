@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 import java.util.HashSet;
 import java.util.Set;
 
-import static passoffTests.chessTests.TestFactory.getNewMove;
-import static passoffTests.chessTests.TestFactory.getNewPosition;
+import static passoffTests.TestFactory.getNewMove;
+import static passoffTests.TestFactory.getNewPosition;
 
 public class ChessMoveTests {
     private ChessMove original;

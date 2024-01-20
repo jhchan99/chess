@@ -2,7 +2,7 @@ package passoffTests.chessTests.chessPieceTests;
 
 import org.junit.jupiter.api.Test;
 
-import static passoffTests.chessTests.TestFactory.*;
+import static passoffTests.TestFactory.*;
 
 public class RookMoveTests {
 
@@ -31,7 +31,7 @@ public class RookMoveTests {
 
 
     @Test
-    public void bishopCaptureEnemy() {
+    public void rookCaptureEnemy() {
         validateMoves("""
                         | | | | | | | | |
                         | | | | | | | | |

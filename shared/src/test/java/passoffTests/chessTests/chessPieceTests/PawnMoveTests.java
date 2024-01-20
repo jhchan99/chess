@@ -2,11 +2,11 @@ package passoffTests.chessTests.chessPieceTests;
 
 import chess.*;
 import org.junit.jupiter.api.Test;
-import passoffTests.chessTests.TestFactory;
+import passoffTests.TestFactory;
 
 import java.util.HashSet;
 
-import static passoffTests.chessTests.TestFactory.*;
+import static passoffTests.TestFactory.*;
 
 public class PawnMoveTests {
 

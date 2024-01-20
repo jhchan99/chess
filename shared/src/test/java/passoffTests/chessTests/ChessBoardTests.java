@@ -3,7 +3,7 @@ package passoffTests.chessTests;
 import chess.*;
 import org.junit.jupiter.api.*;
 
-import static passoffTests.chessTests.TestFactory.*;
+import static passoffTests.TestFactory.*;
 
 public class ChessBoardTests {
 
