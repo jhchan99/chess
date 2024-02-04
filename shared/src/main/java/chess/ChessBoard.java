@@ -13,14 +13,9 @@ public class ChessBoard {
     private final ChessPiece[][] squares = new ChessPiece[8][8];
     //ChessPiece.PieceType piece  = ChessPiece.PieceType.KING;
 
-    public boolean gameStart = false;
 
     public ChessBoard() {
 
-    }
-
-    public boolean gameStartIndicator() {
-        return gameStart = true;
     }
 
     /**

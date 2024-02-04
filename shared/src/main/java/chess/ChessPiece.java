@@ -16,8 +16,8 @@ public class ChessPiece {
 
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
-        piece = type;
-        color = pieceColor;
+        this.piece = type;
+        this.color = pieceColor;
     }
 
     /**
@@ -158,8 +158,6 @@ public class ChessPiece {
         Collection<ChessMove> pawnMoves = new HashSet<>();
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
-
-
 
         // up once - not enemy not friend not blocked
         // up twice
