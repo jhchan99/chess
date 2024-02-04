@@ -115,7 +115,7 @@ public class ChessGame {
             for(int j = 0; j < 8; j++) {
                 // get the position of the current tile
                 ChessPosition newPosition = new ChessPosition(i, j);
-                // get the piece on the current tile
+                // if there is a piece on the tile get the piece on the current tile
                 ChessPiece piece = board.getPiece(newPosition);
                 // get the location of the king
                 ChessPosition kingPosition = findKing(teamColor);
@@ -130,6 +130,7 @@ public class ChessGame {
                 }
             }
         }
+        return false;
     }
 
     /**
