@@ -52,32 +52,33 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+        // create a new set of valid moves
         Collection<ChessMove> validMoves = new HashSet<>();
+        // get the current board state
         ChessBoard board = getBoard();
+        // get the piece at the start position
         ChessPiece piece = board.getPiece(startPosition);
+        // get the possible moves for the piece
         Collection<ChessMove> possibleMoves = new HashSet<>();
         possibleMoves = piece.pieceMoves(board, startPosition);
+        // check every tile on the board
         for(int i = 0; i < 8; i++){
             for(int j = 0; j < 8; j++) {
                 ChessPosition endPosition = new ChessPosition(i, j);
+                // get the piece on the current tile
+                ChessPiece endPiece = board.getPiece(endPosition);
+                // check if the move is valid
+
             }
         }
         return validMoves;
     }
 
-    //
-//    private boolean isMoveValid(ChessPosition startPosition, ChessPosition endPosition, ChessBoard board, ChessPiece.PieceType pieceType) {
-//        if(startPosition.equals(endPosition)) {
-//            return false;
-//        }
-//        ChessPiece startPiece = board.getPiece(startPosition);
-//        ChessPiece endPiece = board.getPiece(endPosition);
-//        if(startPiece.getTeamColor() == endPiece.getTeamColor()) {
-//            return false;
-//        }
-//        return true;
-//
-//    }
+
+    private boolean isMoveValid(ChessPosition startPosition, ChessPosition endPosition, ChessBoard board, ChessPiece.PieceType pieceType) {
+        return false;
+
+    }
 
     /**
      * Makes a move in a chess game
@@ -86,12 +87,18 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        for(ChessMove validMove : validMoves(move.start)) {
-            if(validMove.equals(move)) {
-                return;
-            }
+        // check if the move is in the set of valid moves
+        if(validMoves(move.start).contains(move)){
+            // add the piece to the new position
+            ChessPiece piece = getBoard().getPiece(move.start);
+            // if the piece is a pawn and it is moving to the last row, promote it
+            getBoard().addPiece(move.end, piece);
+            // remove the piece from the old position
+            getBoard().addPiece(move.start, null);
         }
-        throw new InvalidMoveException();
+        else {
+            throw new InvalidMoveException("Invalid move");
+        }
     }
 
     /**
@@ -110,8 +117,17 @@ public class ChessGame {
                 ChessPosition newPosition = new ChessPosition(i, j);
                 // get the piece on the current tile
                 ChessPiece piece = board.getPiece(newPosition);
-
-
+                // get the location of the king
+                ChessPosition kingPosition = findKing(teamColor);
+                // get the possible moves for the piece
+                Collection<ChessMove> possibleMoves = piece.pieceMoves(board, newPosition);
+                // check if the king is in check
+                // if the kings position is in the possible moves of the piece
+                for(ChessMove move : possibleMoves) {
+                    if(move.end.equals(kingPosition)) {
+                        return true;
+                    }
+                }
             }
         }
     }
