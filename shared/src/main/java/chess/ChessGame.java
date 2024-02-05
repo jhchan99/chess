@@ -59,8 +59,7 @@ public class ChessGame {
         // get the piece at the start position
         ChessPiece piece = board.getPiece(startPosition);
         // get the possible moves for the piece
-        Collection<ChessMove> possibleMoves = new HashSet<>();
-        possibleMoves = piece.pieceMoves(board, startPosition);
+        Collection<ChessMove> possibleMoves = piece.pieceMoves(board, startPosition);
         // check every tile on the board
         for(ChessMove move : possibleMoves) {
             // make the move on the board and check if the king is in check
@@ -99,8 +98,7 @@ public class ChessGame {
             getBoard().addPiece(move.end, piece);
             // remove the piece from the old position
             getBoard().addPiece(move.start, null);
-        }
-        else {
+        } else {
             throw new InvalidMoveException("Invalid move");
         }
     }
@@ -119,6 +117,9 @@ public class ChessGame {
             for(int j = 1; j <= 8; j++) {
                 // get the position of the current tile
                 ChessPosition newPosition = new ChessPosition(i, j);
+                if(board.getPiece(newPosition) == null) {
+                    continue;
+                }
                 // if there is a piece on the tile get the piece on the current tile
                 ChessPiece piece = board.getPiece(newPosition);
                 // get the location of the king
