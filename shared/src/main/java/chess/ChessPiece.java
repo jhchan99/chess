@@ -173,19 +173,19 @@ public class ChessPiece {
 
                 }
             }
-            if (row != 2 && row + 1 < 8) {
+            if (row != 2 && row + 1 <= 8) {
                 ChessPosition newPosition = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn());
                 if (board.getPiece(newPosition) == null) {
                     pawnMoves.add(new ChessMove(myPosition, newPosition, null));
                 }
             }
-            if (row +1 < 8 && col+1 < 8){
+            if (row +1 <= 8 && col+1 < 8){
                 ChessPosition newPosition = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()+1);
                 if(board.getPiece(newPosition)!=null && board.getPiece(newPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
                     pawnMoves.add(new ChessMove(myPosition,newPosition, null));
                 }
             }
-            if (row + 1 < 8 && col-1 > -1){
+            if (row + 1 <= 8 && col-1 > 0){
                 ChessPosition newPosition = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()-1);
                 if(board.getPiece(newPosition)!=null && board.getPiece(newPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
                     pawnMoves.add(new ChessMove(myPosition,newPosition, null));
@@ -237,13 +237,13 @@ public class ChessPiece {
                     pawnMoves.add(new ChessMove(myPosition, newPosition, null));
                 }
             }
-            if (row - 1 > 1 && col+1 < 8){
+            if (row - 1 > 1 && col+1 <= 8){
                 ChessPosition newPosition = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()+1);
                 if(board.getPiece(newPosition)!=null && board.getPiece(newPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
                     pawnMoves.add(new ChessMove(myPosition,newPosition, null));
                 }
             }
-            if (row - 1 > 1 && col-1 > -1){
+            if (row - 1 > 1 && col-1 > 0){
                 ChessPosition newPosition = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()-1);
                 if(board.getPiece(newPosition)!=null && board.getPiece(newPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
                     pawnMoves.add(new ChessMove(myPosition,newPosition, null));

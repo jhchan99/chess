@@ -12,7 +12,7 @@ import java.util.Objects;
  */
 public class ChessGame {
 
-    TeamColor teamTurn;
+    TeamColor teamTurn = TeamColor.WHITE;
     ChessBoard board;
 
 
@@ -67,10 +67,16 @@ public class ChessGame {
             ChessPiece pieceAtEnd = board.getPiece(move.end);
             board.addPiece(move.end, piece);
             board.addPiece(move.start, null);
+            // if the king is in check
             if(!isInCheck(piece.getTeamColor())) {
                 validMoves.add(move);
             }
-            // if the king is in check
+            // if the piece is a pawn and its valid moves holds promotion
+
+
+
+
+            // add the piece to the old position
             board.addPiece(move.start, piece);
             // remove the piece from the old position
             board.addPiece(move.end, pieceAtEnd);
@@ -87,12 +93,22 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         // check if the move is in the set of valid moves
         if(validMoves(move.start).contains(move)){
+            // check who's turn it is
+            if(teamTurn != getBoard().getPiece(move.start).getTeamColor()) {
+                throw new InvalidMoveException("Not your turn");
+            }
             // add the piece to the new position
             ChessPiece piece = getBoard().getPiece(move.start);
             // if the piece is a pawn and it is moving to the last row, promote it
             getBoard().addPiece(move.end, piece);
             // remove the piece from the old position
             getBoard().addPiece(move.start, null);
+            // change the turn
+            if(teamTurn == TeamColor.WHITE) {
+                teamTurn = TeamColor.BLACK;
+            } else {
+                teamTurn = TeamColor.WHITE;
+            }
         } else {
             throw new InvalidMoveException("Invalid move");
         }
