@@ -96,7 +96,7 @@ public class ChessPiece {
        int row = myPosition.getRow();
        int column = myPosition.getColumn();
 
-        if(row+1 < 8) {
+        if(row + 1 < 8) {
             ChessPosition newPosition = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn());
             if(board.getPiece(newPosition) == null || board.getPiece(newPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
                 kingMoves.add(new ChessMove(myPosition, newPosition, null));
@@ -173,19 +173,19 @@ public class ChessPiece {
 
                 }
             }
-            if (row != 2 && row + 1 < 7) {
+            if (row != 2 && row + 1 < 8) {
                 ChessPosition newPosition = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn());
                 if (board.getPiece(newPosition) == null) {
                     pawnMoves.add(new ChessMove(myPosition, newPosition, null));
                 }
             }
-            if (row +1<7 && col+1 <8){
+            if (row +1 < 8 && col+1 < 8){
                 ChessPosition newPosition = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()+1);
                 if(board.getPiece(newPosition)!=null && board.getPiece(newPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
                     pawnMoves.add(new ChessMove(myPosition,newPosition, null));
                 }
             }
-            if (row + 1<7 && col-1 >-1){
+            if (row + 1 < 8 && col-1 > -1){
                 ChessPosition newPosition = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()-1);
                 if(board.getPiece(newPosition)!=null && board.getPiece(newPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
                     pawnMoves.add(new ChessMove(myPosition,newPosition, null));
