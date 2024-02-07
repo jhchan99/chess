@@ -71,10 +71,6 @@ public class ChessGame {
             if(!isInCheck(piece.getTeamColor())) {
                 validMoves.add(move);
             }
-            // if the piece is a pawn and its valid moves holds promotion
-
-
-
 
             // add the piece to the old position
             board.addPiece(move.start, piece);
@@ -99,7 +95,11 @@ public class ChessGame {
             }
             // add the piece to the new position
             ChessPiece piece = getBoard().getPiece(move.start);
-            // if the piece is a pawn and it is moving to the last row, promote it
+            // if the piece is a pawn and it has a promotion type in move.type
+            if(piece.getPieceType() == ChessPiece.PieceType.PAWN && move.type != null) {
+                piece = new ChessPiece(piece.getTeamColor(), move.type);
+            }
+
             getBoard().addPiece(move.end, piece);
             // remove the piece from the old position
             getBoard().addPiece(move.start, null);
