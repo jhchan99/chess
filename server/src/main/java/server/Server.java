@@ -1,5 +1,8 @@
 package server;
 
+import com.google.gson.Gson;
+
+
 import spark.*;
 
 public class Server {
@@ -9,9 +12,12 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
+        Spark.init();
+
         // Register your endpoints and handle exceptions here.
 
         Spark.awaitInitialization();
+
         return Spark.port();
     }
 
