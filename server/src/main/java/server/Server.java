@@ -1,19 +1,16 @@
 package server;
 
-import com.google.gson.Gson;
-
-
+import service.Service;
+import dataAccess.DataAccessException;
+import model.UserData;
 import dataAccess.UserDataAccess;
-import service.userservice;
 import spark.*;
 
 public class Server {
 
-    private final userservice service;
+    private Service service;
 
-    public Server(UserDataAccess userData){
-        service = new userservice(userData);
-    }
+
 
 
     public int run(int desiredPort) {
@@ -23,7 +20,7 @@ public class Server {
 
         Spark.init();
 
-        Spark.delete("/db", this::deleteAllUsers);
+        Spark.delete("/db", this::deleteDatabase);
 
         // Register your endpoints and handle exceptions here.
 
@@ -37,8 +34,15 @@ public class Server {
         Spark.awaitStop();
     }
 
-    private Object deleteAllUsers(Request req, Response res) {
-        service.deleteAllUsers();
+    private Object deleteDatabase(Request req, Response res) throws DataAccessException {
+        try {
+            Service service = new Service();
+            service.deleteDatabase();
+            res.status(200);
+            return "{}";
+        } catch (DataAccessException e){
+            return "Fix me";
+        }
     }
 
 
