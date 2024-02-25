@@ -11,8 +11,9 @@ public class MemoryUser implements UserDataAccess{
     final private HashMap<Integer, UserData> users = new HashMap<>();
 
     @Override
-    public UserData addUser(UserData user) {
-        user = new UserData(user.username(), user.password(), user.email());
+    public UserData createUser(UserData user) {
+        user = new UserData(nextId++, user.username(), user.password(), user.email());
+        users.put(user.id(), user);
         return user;
     }
 
@@ -22,19 +23,24 @@ public class MemoryUser implements UserDataAccess{
     }
 
     @Override
-    public UserData getUser(String name) throws DataAccessException {
+    public UserData getUser(UserData user) throws DataAccessException {
+        if(users.containsValue(user)) {
+            return user;
+        }
+        createUser(user);
         return null;
     }
 
     @Override
-    public void deleteUser(Integer id) throws DataAccessException {
+    public void deleteUser(UserData user) throws DataAccessException {
+        if(users.containsValue(user)) {
 
+        }
     }
 
     @Override
     public void deleteDatabase() throws DataAccessException {
         users.clear();
-        throw new DataAccessException("uh oh");
     }
 
 }

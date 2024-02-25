@@ -1,17 +1,17 @@
 package server;
 
+import com.google.gson.Gson;
 import service.Service;
 import dataAccess.DataAccessException;
 import model.UserData;
-import dataAccess.UserDataAccess;
 import spark.*;
+
+import javax.xml.crypto.Data;
+import java.util.Map;
 
 public class Server {
 
-    private Service service;
-
-
-
+    private final Service service = new Service();
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -21,6 +21,9 @@ public class Server {
         Spark.init();
 
         Spark.delete("/db", this::deleteDatabase);
+        Spark.post("/user", this::registerUser);
+        Spark.post("/session", this::loginUser);
+        Spark.delete("/session", this::logoutUser);
 
         // Register your endpoints and handle exceptions here.
 
@@ -34,9 +37,41 @@ public class Server {
         Spark.awaitStop();
     }
 
+    private Object registerUser(Request req, Response res) throws DataAccessException {
+        try {
+            var user = new Gson().fromJson(req.body(), UserData.class);
+            service.getUser(user);
+            var auth = service.createAuth();
+            res.status(200);
+            return new Gson().toJson(Map.of("authToken", auth));
+        }catch (DataAccessException e) {
+            return "that's not good addUser might be broken oops";
+        }
+    }
+
+    private Object loginUser(Request req, Response res) throws DataAccessException {
+        try {
+            var user = new Gson().fromJson(req.body(), UserData.class);
+            user = service.getUser(user);
+            var auth = service.createAuth();
+            res.status(200);
+            return new Gson().toJson(Map.of("authToken", auth, "username", user.username()));
+        } catch (DataAccessException e) {
+            return "that's not good loginUser might be broken oops";
+        }
+    }
+
+    private Object logoutUser(Request req, Response res) throws DataAccessException {
+        try {
+            service.
+            return "{}";
+        } catch (DataAccessException e){
+            return "Fix me";
+        }
+    }
+
     private Object deleteDatabase(Request req, Response res) throws DataAccessException {
         try {
-            Service service = new Service();
             service.deleteDatabase();
             res.status(200);
             return "{}";
