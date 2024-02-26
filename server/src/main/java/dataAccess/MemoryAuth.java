@@ -11,8 +11,7 @@ public class MemoryAuth implements AuthDataAccess{
 
     @Override
     public String createAuth() throws DataAccessException {
-        String auth = UUID.randomUUID().toString();
-        return auth;
+        return UUID.randomUUID().toString();
     }
 
     @Override
@@ -22,6 +21,6 @@ public class MemoryAuth implements AuthDataAccess{
 
     @Override
     public void deleteAuth(String auth) throws DataAccessException {
-
+        auths.remove(auth);
     }
 }

@@ -1,11 +1,10 @@
 package service;
 
 import dataAccess.*;
-import model.UserData;
 import model.AuthData;
-import org.eclipse.jetty.server.Authentication;
+import model.UserData;
 
-import java.util.Map;
+import java.util.Objects;
 
 public class Service {
 
@@ -14,23 +13,33 @@ public class Service {
 
 
     public UserData getUser(UserData user) throws DataAccessException {
-        if(userAccess.getUser(user) != null && userAccess.getUser(user).password().equals(user.password())) {
-            return user;
-        }else {
-            return createUser(user);
+        UserData retrievedUser = userAccess.getUser(user);
+        if (retrievedUser == null) {
+            throw new DataAccessException("User not found");
         }
+        if (!Objects.equals(retrievedUser.password(), user.password())) {
+            throw new DataAccessException("Invalid password");
+        }
+        return retrievedUser;
     }
 
-    public UserData createUser(UserData user) throws DataAccessException {
-        return userAccess.createUser(user);
+    public void deleteUser(UserData user) throws DataAccessException {
+        userAccess.deleteUser(user);
     }
+
+    public void createUser(UserData user) throws DataAccessException {
+        userAccess.createUser(user);
+    }
+
     public void deleteDatabase() throws DataAccessException {
         userAccess.deleteDatabase();
     }
-
     public String createAuth() throws DataAccessException {
-        authAccess.createAuth();
+        return authAccess.createAuth();
+    }
 
+    public void deleteAuth(AuthData auth) throws DataAccessException {
+        authAccess.deleteAuth(auth.authToken());
     }
 
 

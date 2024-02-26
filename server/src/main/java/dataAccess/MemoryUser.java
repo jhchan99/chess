@@ -8,12 +8,12 @@ import java.util.HashMap;
 public class MemoryUser implements UserDataAccess{
     private int nextId = 1;
 
-    final private HashMap<Integer, UserData> users = new HashMap<>();
+    final private HashMap<String, UserData> users = new HashMap<>();
 
     @Override
     public UserData createUser(UserData user) {
-        user = new UserData(nextId++, user.username(), user.password(), user.email());
-        users.put(user.id(), user);
+        user = new UserData(user.username(), user.password(), user.email());
+        users.put(user.username(), user);
         return user;
     }
 
@@ -24,17 +24,18 @@ public class MemoryUser implements UserDataAccess{
 
     @Override
     public UserData getUser(UserData user) throws DataAccessException {
-        if(users.containsValue(user)) {
+        if(users.containsKey(user.username())){
             return user;
         }
-        createUser(user);
         return null;
     }
 
     @Override
     public void deleteUser(UserData user) throws DataAccessException {
         if(users.containsValue(user)) {
-
+            users.remove(user.username());
+        }else {
+            throw new DataAccessException("User not found");
         }
     }
 

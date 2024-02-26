@@ -1,6 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
+import model.AuthData;
 import service.Service;
 import dataAccess.DataAccessException;
 import model.UserData;
@@ -40,7 +41,7 @@ public class Server {
     private Object registerUser(Request req, Response res) throws DataAccessException {
         try {
             var user = new Gson().fromJson(req.body(), UserData.class);
-            service.getUser(user);
+            service.createUser(user);
             var auth = service.createAuth();
             res.status(200);
             return new Gson().toJson(Map.of("authToken", auth));
@@ -57,13 +58,17 @@ public class Server {
             res.status(200);
             return new Gson().toJson(Map.of("authToken", auth, "username", user.username()));
         } catch (DataAccessException e) {
-            return "that's not good loginUser might be broken oops";
+            if(e.getMessage().equals("User not found")){
+                res.status(401);
+                return "User not found";
+            }
         }
+        return "Fix me";
     }
 
     private Object logoutUser(Request req, Response res) throws DataAccessException {
         try {
-            service.
+            service.deleteAuth(new Gson().fromJson(req.body(), AuthData.class));
             return "{}";
         } catch (DataAccessException e){
             return "Fix me";
