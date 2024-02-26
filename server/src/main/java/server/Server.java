@@ -2,6 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import model.AuthData;
+import model.GameData;
 import service.Service;
 import dataAccess.DataAccessException;
 import model.UserData;
@@ -25,6 +26,10 @@ public class Server {
         Spark.post("/user", this::registerUser);
         Spark.post("/session", this::loginUser);
         Spark.delete("/session", this::logoutUser);
+        Spark.post("/game", this::createGame);
+        Spark.get("/game", this::getGame);
+
+
 
         // Register your endpoints and handle exceptions here.
 
@@ -60,7 +65,11 @@ public class Server {
         } catch (DataAccessException e) {
             if(e.getMessage().equals("User not found")){
                 res.status(401);
-                return "User not found";
+                return new Gson().toJson(Map.of("message", "Error: unauthorized"));
+            }
+            if(e.getMessage().equals("Password incorrect")){
+                res.status(401);
+                return new Gson().toJson(Map.of("message", "Error: unauthorized"));
             }
         }
         return "Fix me";
@@ -73,6 +82,19 @@ public class Server {
         } catch (DataAccessException e){
             return "Fix me";
         }
+    }
+
+    private Object createGame(Request req, Response res) throws DataAccessException {
+        try {
+            String authToken = req.headers("Authorization");
+            var game = new Gson().fromJson(req.body(), GameData.class);
+            game = service.createGame(auth);
+        }
+    }
+
+
+    private Object getGame(Request req, Response res) throws DataAccessException {
+
     }
 
     private Object deleteDatabase(Request req, Response res) throws DataAccessException {

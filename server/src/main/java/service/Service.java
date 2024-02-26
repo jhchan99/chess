@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import dataAccess.*;
 import model.AuthData;
 import model.UserData;
@@ -18,7 +19,7 @@ public class Service {
             throw new DataAccessException("User not found");
         }
         if (!Objects.equals(retrievedUser.password(), user.password())) {
-            throw new DataAccessException("Invalid password");
+            throw new DataAccessException("Password incorrect");
         }
         return retrievedUser;
     }
@@ -40,6 +41,13 @@ public class Service {
 
     public void deleteAuth(AuthData auth) throws DataAccessException {
         authAccess.deleteAuth(auth.authToken());
+    }
+
+    public ChessGame createGame(AuthData auth) throws DataAccessException {
+        if(auth == null) {
+            throw new DataAccessException("Auth token not found");
+        }
+        return new ChessGame();
     }
 
 
