@@ -3,12 +3,12 @@ package server;
 import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
+import model.requests.JoinGameRequests;
 import service.Service;
 import dataAccess.DataAccessException;
 import model.UserData;
 import spark.*;
 
-import javax.xml.crypto.Data;
 import java.util.Map;
 
 public class Server {
@@ -27,7 +27,8 @@ public class Server {
         Spark.post("/session", this::loginUser);
         Spark.delete("/session", this::logoutUser);
         Spark.post("/game", this::createGame);
-        Spark.get("/game", this::getGame);
+        Spark.put("/game", this::joinGame);
+        Spark.get("/game", this::listGames);
 
 
 
@@ -46,22 +47,24 @@ public class Server {
     private Object registerUser(Request req, Response res) throws DataAccessException {
         try {
             var user = new Gson().fromJson(req.body(), UserData.class);
-            service.createUser(user);
-            var auth = service.createAuth();
+            var newAuth = service.registerUser(user);
             res.status(200);
-            return new Gson().toJson(Map.of("authToken", auth));
+            return new Gson().toJson(Map.of("username", user.username(), "authToken", newAuth.authToken()));
         }catch (DataAccessException e) {
-            return "that's not good addUser might be broken oops";
+            if (e.getMessage().equals("User already exists")) {
+                res.status(403);
+                return new Gson().toJson(Map.of("message", "Error: already taken"));
+            }
         }
+        return null;
     }
 
-    private Object loginUser(Request req, Response res) throws DataAccessException {
+    private Object loginUser(Request req, Response res){
         try {
             var user = new Gson().fromJson(req.body(), UserData.class);
-            user = service.getUser(user);
-            var auth = service.createAuth();
+            var auth = service.loginUser(user);
             res.status(200);
-            return new Gson().toJson(Map.of("authToken", auth, "username", user.username()));
+            return new Gson().toJson(Map.of("username", user.username(), "authToken", auth.authToken()));
         } catch (DataAccessException e) {
             if(e.getMessage().equals("User not found")){
                 res.status(401);
@@ -75,35 +78,94 @@ public class Server {
         return "Fix me";
     }
 
-    private Object logoutUser(Request req, Response res) throws DataAccessException {
+    private Object logoutUser(Request req, Response res){
         try {
-            service.deleteAuth(new Gson().fromJson(req.body(), AuthData.class));
+            // Get the auth token
+            String authToken = req.headers("Authorization");
+            // Delete the auth token
+            service.deleteAuth(authToken);
             return "{}";
         } catch (DataAccessException e){
-            return "Fix me";
+            if(e.getMessage().equals("Auth token not found")){
+                res.status(401);
+                return new Gson().toJson(Map.of("message", "Error: unauthorized"));
+            }
         }
+        return null;
     }
 
-    private Object createGame(Request req, Response res) throws DataAccessException {
+    private Object createGame(Request req, Response res){
         try {
             String authToken = req.headers("Authorization");
-            var game = new Gson().fromJson(req.body(), GameData.class);
-            game = service.createGame(auth);
+            GameData game = new Gson().fromJson(req.body(), GameData.class);
+            game = service.createGame(authToken, game);
+            res.status(200);
+            return new Gson().toJson(Map.of("gameID", game.gameID()));
+        } catch (DataAccessException e){
+            if(e.getMessage().equals("Auth token not found")){
+                res.status(401);
+                return new Gson().toJson(Map.of("message", "Error: unauthorized"));
+            }
         }
+        return "Fix createGame";
     }
 
 
-    private Object getGame(Request req, Response res) throws DataAccessException {
-
+    private Object joinGame(Request req, Response res){
+        // get the auth token
+        String authToken = req.headers("Authorization");
+        // get the user
+        JoinGameRequests player = new Gson().fromJson(req.body(), JoinGameRequests.class);
+        try {
+            // join the game
+            service.updateGame(authToken, player);
+            res.status(200);
+            return "{}";
+        } catch (DataAccessException e){
+            if(e.getMessage().equals("Auth token not found")){
+                res.status(401);
+                return new Gson().toJson(Map.of("message", "Error: unauthorized"));
+            }
+            if(e.getMessage().equals("Game not found")){
+                res.status(400);
+                return new Gson().toJson(Map.of("message", "Error: bad request"));
+            }
+            if(e.getMessage().equals("User not found")){
+                res.status(400);
+                return new Gson().toJson(Map.of("message", "Error: bad request"));
+            }
+            if(e.getMessage().equals("Player color already taken")){
+                res.status(403);
+                return new Gson().toJson(Map.of("message", "Error: already taken"));
+            }
+        }
+        return "Fix me joinGame";
     }
 
-    private Object deleteDatabase(Request req, Response res) throws DataAccessException {
+    private Object listGames(Request req, Response res){
+        try {
+            // get auth token
+            String authToken = req.headers("Authorization");
+            // get the list of games
+            var games = service.listGames(authToken);
+            res.status(200);
+            return new Gson().toJson(Map.of("games", games));
+        } catch (DataAccessException e){
+            if(e.getMessage().equals("Auth token not found")){
+                res.status(401);
+                return new Gson().toJson(Map.of("message", "Error: unauthorized"));
+            }
+        }
+        return "Fix me listGames";
+    }
+
+    private Object deleteDatabase(Request req, Response res){
         try {
             service.deleteDatabase();
             res.status(200);
             return "{}";
         } catch (DataAccessException e){
-            return "Fix me";
+            return "Fix me deleteDatabase";
         }
     }
 

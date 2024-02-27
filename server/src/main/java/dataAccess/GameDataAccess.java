@@ -1,15 +1,18 @@
 package dataAccess;
 
+import model.GameData;
+
+import java.util.Collection;
+
 public interface GameDataAccess {
 
-    void createGame() throws DataAccessException;
+    GameData createGame(String gameName) throws DataAccessException;
+    GameData getGame(int game) throws DataAccessException;
+    GameData addWhitePlayer(int gameId, String username) throws DataAccessException;
+    GameData addBlackPlayer(int gameId, String username) throws DataAccessException;
 
-    void deleteGame() throws DataAccessException;
+    Collection<GameData> listGames() throws DataAccessException;
 
-    void getGame() throws DataAccessException;
-
-    void listGames() throws DataAccessException;
-
-    void updateGame() throws DataAccessException;
+    void updateGame(GameData game) throws DataAccessException;
 
 }

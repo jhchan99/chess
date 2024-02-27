@@ -5,9 +5,7 @@ import model.UserData;
 
 public interface UserDataAccess {
 
-    UserData createUser(UserData user) throws DataAccessException;
-
-    Collection<UserData> listUsers() throws DataAccessException;
+    UserData registerUser(UserData user);
 
     UserData getUser(UserData user) throws DataAccessException;
 

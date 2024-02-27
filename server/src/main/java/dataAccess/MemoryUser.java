@@ -6,28 +6,20 @@ import java.util.Collection;
 import java.util.HashMap;
 
 public class MemoryUser implements UserDataAccess{
-    private int nextId = 1;
+    private final int nextId = 1;
 
     final private HashMap<String, UserData> users = new HashMap<>();
 
     @Override
-    public UserData createUser(UserData user) {
+    public UserData registerUser(UserData user) {
         user = new UserData(user.username(), user.password(), user.email());
         users.put(user.username(), user);
         return user;
     }
 
     @Override
-    public Collection<UserData> listUsers() throws DataAccessException {
-        return null;
-    }
-
-    @Override
     public UserData getUser(UserData user) throws DataAccessException {
-        if(users.containsKey(user.username())) {
-            return users.get(user.username());
-        }
-        return null;
+        return users.get(user.username());
     }
 
     @Override
