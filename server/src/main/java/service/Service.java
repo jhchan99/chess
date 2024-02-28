@@ -34,20 +34,20 @@ public class Service {
         if (userAccess.getUser(user) != null) {
             throw new DataAccessException("User already exists");
         }
+        // check if user is valid
+        if (user.username() == null || user.password() == null || user.email() == null) {
+            throw new DataAccessException("Invalid user data");
+        }
         // create user
         userAccess.registerUser(user);
         // return new auth token
         return new AuthData(user.username(), createAuth(user));
     }
 
-
-
-    public void deleteUser(UserData user) throws DataAccessException {
-        userAccess.deleteUser(user);
-    }
-
     public void deleteDatabase() throws DataAccessException {
-        userAccess.deleteDatabase();
+        userAccess.deleteUsers();
+        authAccess.deleteAllAuths();
+        gameAccess.deleteGames();
     }
     public String createAuth(UserData user) throws DataAccessException {
         return authAccess.createAuth(user);
@@ -71,7 +71,7 @@ public class Service {
         return gameAccess.createGame(game.gameName());
     }
 
-    public GameData updateGame(String auth, JoinGameRequests joinReqs) throws DataAccessException {
+    public void updateGame(String auth, JoinGameRequests joinReqs) throws DataAccessException {
         // check if auth exists in database
         if(auth == null ||  authAccess.getAuth(auth) == null) {
             throw new DataAccessException("Auth token not found");
@@ -84,17 +84,26 @@ public class Service {
         GameData game = gameAccess.getGame(joinReqs.gameID());
         // get user based on auth token
         UserData user = userAccess.getUser(new UserData(authAccess.getAuth(auth).username(), null, null));
-        // if user is white color add user to game
-        if(joinReqs.playerColor() == ChessGame.TeamColor.WHITE) {
-            gameAccess.addWhitePlayer(game.gameID(), user.username());
-        } else if(joinReqs.playerColor() == ChessGame.TeamColor.BLACK) {
-            gameAccess.addBlackPlayer(game.gameID(), user.username());
-        } else if(joinReqs.playerColor() == null) {
-            return game;
-        } else {
-            throw new DataAccessException("Player color already taken");
+        // check if game is full
+        if(game.whiteUsername() != null && game.blackUsername() != null) {
+            throw new DataAccessException("Game is full");
+        }
+        // if player wants to be a watcher
+        if(joinReqs.playerColor() == null){
+            return;
         }
 
+        if(joinReqs.playerColor() == ChessGame.TeamColor.WHITE) {
+            if(game.whiteUsername() != null){
+                throw new DataAccessException("White player is taken");
+            }
+            gameAccess.addWhitePlayer(game.gameID(), user.username());
+        } else {
+            if(game.blackUsername() != null){
+                throw new DataAccessException("Black player is taken");
+            }
+            gameAccess.addBlackPlayer(game.gameID(), user.username());
+        }
     }
 
     public Collection<GameData> listGames (String auth) throws DataAccessException {
@@ -104,6 +113,7 @@ public class Service {
         }
         // get list of games
         return gameAccess.listGames();
+
     }
 
 

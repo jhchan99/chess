@@ -9,9 +9,7 @@ public interface UserDataAccess {
 
     UserData getUser(UserData user) throws DataAccessException;
 
-    void deleteUser(UserData user) throws DataAccessException;
-
-    void deleteDatabase() throws DataAccessException;
+    void deleteUsers() throws DataAccessException;
 
 
 }

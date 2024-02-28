@@ -19,15 +19,17 @@ public class MemoryAuth implements AuthDataAccess{
         auths.put(authToken, new AuthData(user.username(), authToken));
         return authToken;
     }
-
     @Override
     public AuthData getAuth(String auth) throws DataAccessException {
         return auths.get(auth);
     }
-
     @Override
     public void deleteAuth(String auth){
         // remove auth token from auths
         auths.remove(auth);
+    }
+    @Override
+    public void deleteAllAuths() {
+        auths.clear();
     }
 }

@@ -55,6 +55,10 @@ public class Server {
                 res.status(403);
                 return new Gson().toJson(Map.of("message", "Error: already taken"));
             }
+            if (e.getMessage().equals("Invalid user data")) {
+                res.status(400);
+                return new Gson().toJson(Map.of("message", "Error: bad request"));
+            }
         }
         return null;
     }
@@ -122,6 +126,14 @@ public class Server {
             res.status(200);
             return "{}";
         } catch (DataAccessException e){
+            if(e.getMessage().equals("White player is taken")){
+                res.status(403);
+                return new Gson().toJson(Map.of("message", "Error: already taken"));
+            }
+            if(e.getMessage().equals("Black player is taken")){
+                res.status(403);
+                return new Gson().toJson(Map.of("message", "Error: already taken"));
+            }
             if(e.getMessage().equals("Auth token not found")){
                 res.status(401);
                 return new Gson().toJson(Map.of("message", "Error: unauthorized"));
@@ -134,7 +146,11 @@ public class Server {
                 res.status(400);
                 return new Gson().toJson(Map.of("message", "Error: bad request"));
             }
-            if(e.getMessage().equals("Player color already taken")){
+            if(e.getMessage().equals("Invalid player color")){
+                res.status(400);
+                return new Gson().toJson(Map.of("message", "Error: bad request"));
+            }
+            if(e.getMessage().equals("Game is full")) {
                 res.status(403);
                 return new Gson().toJson(Map.of("message", "Error: already taken"));
             }

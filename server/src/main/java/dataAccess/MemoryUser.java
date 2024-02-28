@@ -23,16 +23,7 @@ public class MemoryUser implements UserDataAccess{
     }
 
     @Override
-    public void deleteUser(UserData user) throws DataAccessException {
-        if(users.containsValue(user)) {
-            users.remove(user.username());
-        }else {
-            throw new DataAccessException("User not found");
-        }
-    }
-
-    @Override
-    public void deleteDatabase() throws DataAccessException {
+    public void deleteUsers() throws DataAccessException {
         users.clear();
     }
 

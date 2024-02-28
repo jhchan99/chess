@@ -11,4 +11,6 @@ public interface AuthDataAccess {
 
     void deleteAuth(String auth) throws DataAccessException;
 
+    void deleteAllAuths() throws DataAccessException;
+
 }
