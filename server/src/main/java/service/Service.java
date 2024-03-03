@@ -7,17 +7,27 @@ import model.UserData;
 import model.GameData;
 import model.requests.JoinGameRequests;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Objects;
 
 public class Service {
 
-    private final UserDataAccess userAccess = new MemoryUser();
-    private final AuthDataAccess authAccess = new MemoryAuth();
-    private final GameDataAccess gameAccess = new MemoryGame();
+    private final UserDataAccess userAccess;
+
+    {
+        try {
+            userAccess = new DatabaseUser();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private final AuthDataAccess authAccess = new DatabaseAuth();
+    private final GameDataAccess gameAccess = new DatabaseGame();
 
 
-    public AuthData loginUser(UserData user) throws DataAccessException {
+    public AuthData loginUser(UserData user) throws DataAccessException, SQLException {
         // Check if user exists
         UserData user1 = userAccess.getUser(user);
         // If user exists and password matches, return new auth token
@@ -29,7 +39,8 @@ public class Service {
         throw new DataAccessException("User not found");
     }
 
-    public AuthData registerUser(UserData user) throws DataAccessException {
+    public AuthData registerUser(UserData user) throws DataAccessException, SQLException {
+        try {
         // check if user already exists
         if (userAccess.getUser(user) != null) {
             throw new DataAccessException("User already exists");
@@ -42,6 +53,9 @@ public class Service {
         userAccess.registerUser(user);
         // return new auth token
         return new AuthData(user.username(), createAuth(user));
+        } catch (SQLException e) {
+            throw new DataAccessException("User already exists");
+        }
     }
 
     public void deleteDatabase() throws DataAccessException {
@@ -71,7 +85,7 @@ public class Service {
         return gameAccess.createGame(game.gameName());
     }
 
-    public void updateGame(String auth, JoinGameRequests joinReqs) throws DataAccessException {
+    public void updateGame(String auth, JoinGameRequests joinReqs) throws DataAccessException, SQLException {
         // check if auth exists in database
         if(auth == null ||  authAccess.getAuth(auth) == null) {
             throw new DataAccessException("Auth token not found");

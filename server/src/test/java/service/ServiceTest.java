@@ -1,15 +1,15 @@
 package service;
 
 import chess.ChessGame;
-import dataAccess.AuthDataAccess;
 import dataAccess.DataAccessException;
-import dataAccess.MemoryAuth;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
 import model.requests.JoinGameRequests;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.sql.SQLException;
 
 
 class ServiceTest {
@@ -19,7 +19,7 @@ class ServiceTest {
 
     @Test
     // Test that listGames works
-    void listGames() throws DataAccessException{
+    void listGames() throws DataAccessException, SQLException {
         // create test user
         AuthData testUser = service.registerUser(new UserData("user", "password", "email"));
         // Test for empty list of games
@@ -32,7 +32,7 @@ class ServiceTest {
 
     @Test
     // test listGames can fail with an exception
-    void testListGames() throws DataAccessException{
+    void testListGames() throws DataAccessException, SQLException {
         // create test user
         AuthData testUser = service.registerUser(new UserData("user", "password", "email"));
         // create test game
@@ -42,7 +42,7 @@ class ServiceTest {
     }
 
     @Test
-    void loginUser() throws DataAccessException {
+    void loginUser() throws DataAccessException, SQLException {
         // create test user
         service.registerUser(new UserData("user", "password", "email"));
         // Test for a user that exists with username
@@ -53,7 +53,7 @@ class ServiceTest {
 
     @Test
     // test loginUser can fail with an exception
-    void testLoginUser() throws DataAccessException {
+    void testLoginUser() throws DataAccessException, SQLException {
         // create test user
         service.registerUser(new UserData("user", "password", "email"));
         // Test that loginUser will fail with an exception
@@ -61,7 +61,7 @@ class ServiceTest {
     }
 
     @Test
-    void registerUser() throws DataAccessException{
+    void registerUser() throws DataAccessException, SQLException {
         // create test user
         UserData testUser = new UserData("user", "password", "email");
         // Test that the user is created with the correct username
@@ -74,7 +74,7 @@ class ServiceTest {
 
     @Test
     // test registerUser can fail with an exception
-    void testRegisterUser() throws DataAccessException{
+    void testRegisterUser() throws DataAccessException, SQLException {
         // create test user
         UserData testUser = new UserData("user", "password", "email");
         // Test that registerUser will fail with an exception try to register the same user twice
@@ -84,7 +84,7 @@ class ServiceTest {
     }
 
     @Test
-    void deleteDatabase() throws DataAccessException{
+    void deleteDatabase() throws DataAccessException, SQLException {
         // create test user and game
         AuthData testUser = service.registerUser(new UserData("user", "password", "email"));
         service.createGame(testUser.authToken(), new GameData(0, null, null, "gameName", null));
@@ -104,7 +104,7 @@ class ServiceTest {
 
     @Test
     // test createAuth can fail with an exception
-    void testCreateAuth() throws DataAccessException{
+    void testCreateAuth() throws DataAccessException, SQLException {
         // create test user
         service.registerUser(new UserData("user", "password", "email"));
         // Test that createAuth will fail with an exception by trying to log in with wrong password
@@ -120,7 +120,7 @@ class ServiceTest {
     }
 
     @Test
-    void createGame() throws DataAccessException{
+    void createGame() throws DataAccessException, SQLException {
         // create test user and game
         AuthData testUser = service.registerUser(new UserData("user", "password", "email"));
         GameData testGame = new GameData(0, null, null, "gameName", null);
@@ -137,7 +137,7 @@ class ServiceTest {
     }
 
     @Test
-    void updateGame() throws DataAccessException{
+    void updateGame() throws DataAccessException, SQLException {
         // create test user and game
         AuthData testUser = service.registerUser(new UserData("user", "password", "email"));
         GameData testGame = new GameData(0, null, null, "gameName", null);

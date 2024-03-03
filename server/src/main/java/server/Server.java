@@ -9,6 +9,7 @@ import dataAccess.DataAccessException;
 import model.UserData;
 import spark.*;
 
+import java.sql.SQLException;
 import java.util.Map;
 
 public class Server {
@@ -50,7 +51,7 @@ public class Server {
             var newAuth = service.registerUser(user);
             res.status(200);
             return new Gson().toJson(Map.of("username", user.username(), "authToken", newAuth.authToken()));
-        }catch (DataAccessException e) {
+        }catch (DataAccessException | SQLException e) {
             if (e.getMessage().equals("User already exists")) {
                 res.status(403);
                 return new Gson().toJson(Map.of("message", "Error: already taken"));
@@ -69,7 +70,7 @@ public class Server {
             var auth = service.loginUser(user);
             res.status(200);
             return new Gson().toJson(Map.of("username", user.username(), "authToken", auth.authToken()));
-        } catch (DataAccessException e) {
+        } catch (DataAccessException | SQLException e) {
             if(e.getMessage().equals("User not found")){
                 res.status(401);
                 return new Gson().toJson(Map.of("message", "Error: unauthorized"));
@@ -125,7 +126,7 @@ public class Server {
             service.updateGame(authToken, player);
             res.status(200);
             return "{}";
-        } catch (DataAccessException e){
+        } catch (DataAccessException | SQLException e){
             if(e.getMessage().equals("White player is taken")){
                 res.status(403);
                 return new Gson().toJson(Map.of("message", "Error: already taken"));
@@ -154,6 +155,7 @@ public class Server {
                 res.status(403);
                 return new Gson().toJson(Map.of("message", "Error: already taken"));
             }
+
         }
         return "Fix me joinGame";
     }
