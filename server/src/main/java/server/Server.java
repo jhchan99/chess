@@ -90,7 +90,7 @@ public class Server {
             // Delete the auth token
             service.deleteAuth(authToken);
             return "{}";
-        } catch (DataAccessException e){
+        } catch (DataAccessException | SQLException e){
             if(e.getMessage().equals("Auth token not found")){
                 res.status(401);
                 return new Gson().toJson(Map.of("message", "Error: unauthorized"));
@@ -106,7 +106,7 @@ public class Server {
             game = service.createGame(authToken, game);
             res.status(200);
             return new Gson().toJson(Map.of("gameID", game.gameID()));
-        } catch (DataAccessException e){
+        } catch (DataAccessException | SQLException e){
             if(e.getMessage().equals("Auth token not found")){
                 res.status(401);
                 return new Gson().toJson(Map.of("message", "Error: unauthorized"));
@@ -168,7 +168,7 @@ public class Server {
             var games = service.listGames(authToken);
             res.status(200);
             return new Gson().toJson(Map.of("games", games));
-        } catch (DataAccessException e){
+        } catch (DataAccessException | SQLException e){
             if(e.getMessage().equals("Auth token not found")){
                 res.status(401);
                 return new Gson().toJson(Map.of("message", "Error: unauthorized"));

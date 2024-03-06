@@ -7,6 +7,7 @@ import model.UserData;
 import model.GameData;
 import model.requests.JoinGameRequests;
 
+import javax.xml.crypto.Data;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Objects;
@@ -23,8 +24,17 @@ public class Service {
         }
     }
 
-    private final AuthDataAccess authAccess = new DatabaseAuth();
-    private final GameDataAccess gameAccess = new DatabaseGame();
+    private final AuthDataAccess authAccess;
+
+    {
+        try {
+            authAccess = new DatabaseAuth();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private final GameDataAccess gameAccess = new MemoryGame();
 
 
     public AuthData loginUser(UserData user) throws DataAccessException, SQLException {
@@ -64,25 +74,30 @@ public class Service {
         gameAccess.deleteGames();
     }
     public String createAuth(UserData user) throws DataAccessException {
-        return authAccess.createAuth(user);
+        try {
+            return authAccess.createAuth(user);
+        }catch (DataAccessException | SQLException e) {
+            return "something went wrong while trying to create auth";
+        }
     }
 
-    public void deleteAuth(String auth) throws DataAccessException {
+    public void deleteAuth(String auth) throws DataAccessException, SQLException {
         // check if auth exists in database
-        if (auth == null || authAccess.getAuth(auth) == null){
-            throw new DataAccessException("Auth token not found");
-        }
-        // delete auth from database
-        authAccess.deleteAuth(auth);
+            if (auth == null || authAccess.getAuth(auth) == null) {
+                throw new DataAccessException("Auth token not found");
+            }
+            // delete auth from database
+            authAccess.deleteAuth(auth);
     }
 
-    public GameData createGame(String auth, GameData game) throws DataAccessException {
+    public GameData createGame(String auth, GameData game) throws DataAccessException, SQLException{
         // check if auth exists in database
-        if(auth == null ||  authAccess.getAuth(auth) == null) {
-            throw new DataAccessException("Auth token not found");
-        }
-        // create game
-        return gameAccess.createGame(game.gameName());
+            if (auth == null || authAccess.getAuth(auth) == null) {
+                throw new DataAccessException("Auth token not found");
+            }
+            // create game
+            return gameAccess.createGame(game.gameName());
+
     }
 
     public void updateGame(String auth, JoinGameRequests joinReqs) throws DataAccessException, SQLException {
@@ -120,7 +135,7 @@ public class Service {
         }
     }
 
-    public Collection<GameData> listGames (String auth) throws DataAccessException {
+    public Collection<GameData> listGames (String auth) throws DataAccessException, SQLException {
         // check if auth exists in database
         if(auth == null ||  authAccess.getAuth(auth) == null) {
             throw new DataAccessException("Auth token not found");

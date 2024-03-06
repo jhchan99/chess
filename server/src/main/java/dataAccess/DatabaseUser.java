@@ -22,16 +22,20 @@ public class DatabaseUser implements UserDataAccess{
     @Override
     public UserData getUser(UserData user) throws DataAccessException, SQLException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT username, json FROM user WHERE username=?";
+            var statement = "SELECT username, password, email FROM user WHERE username=?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, user.username());
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        return user;
+                        String username = rs.getString("username");
+                        String password = rs.getString("password");
+                        String email = rs.getString("email");
+                        return new UserData(username, password, email);
                     }
                 }
             }
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new DataAccessException("get user failed");
         }
         return null;
@@ -39,7 +43,15 @@ public class DatabaseUser implements UserDataAccess{
 
     @Override
     public void deleteUsers() throws DataAccessException {
-
+        // delete all users
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "DELETE FROM user";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("delete users failed");
+        }
     }
 
     private void executeUpdate(String statement, Object... params) throws DataAccessException, SQLException {
@@ -59,13 +71,14 @@ public class DatabaseUser implements UserDataAccess{
 
             }
         } catch (SQLException e){
+            e.printStackTrace();
             throw new DataAccessException("trouble updating table");
         }
     }
 
     private final String[] createStatements = {
         """
-            CREATE TABLE IF NOT EXISTS  user (
+            CREATE TABLE IF NOT EXISTS user(
               `username` varchar(256) NOT NULL PRIMARY KEY,
               `password` varchar(256) NOT NULL,
               `email` varchar(256) NOT NULL
@@ -83,6 +96,7 @@ public class DatabaseUser implements UserDataAccess{
                 }
             }
         } catch (SQLException ex) {
+            ex.printStackTrace();
             throw new DataAccessException("there was an issue configuring the database");
         }
     }

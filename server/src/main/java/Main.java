@@ -1,5 +1,6 @@
 import chess.*;
 import dataAccess.DataAccessException;
+import dataAccess.DatabaseManager;
 import server.Server;
 
 public class Main {

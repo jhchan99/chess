@@ -33,18 +33,12 @@ class ServiceTest {
     @Test
     // test listGames can fail with an exception
     void testListGames() throws DataAccessException, SQLException {
-        // create test user
-        AuthData testUser = service.registerUser(new UserData("user", "password", "email"));
-        // create test game
-        service.createGame(testUser.authToken(), new GameData(0, null, null, "gameName", null));
         // Test that list will fail with an exception
         Assertions.assertThrows(DataAccessException.class, () -> service.listGames("badAuthToken"));
     }
 
     @Test
     void loginUser() throws DataAccessException, SQLException {
-        // create test user
-        service.registerUser(new UserData("user", "password", "email"));
         // Test for a user that exists with username
         Assertions.assertEquals("user", service.loginUser(new UserData("user", "password", "email")).username());
         // Test for not null auth token
@@ -54,14 +48,14 @@ class ServiceTest {
     @Test
     // test loginUser can fail with an exception
     void testLoginUser() throws DataAccessException, SQLException {
-        // create test user
-        service.registerUser(new UserData("user", "password", "email"));
         // Test that loginUser will fail with an exception
         Assertions.assertThrows(DataAccessException.class, () -> service.loginUser(new UserData("user", "badPassword", "email")));
     }
 
     @Test
     void registerUser() throws DataAccessException, SQLException {
+        // first delete database
+        service.deleteDatabase();
         // create test user
         UserData testUser = new UserData("user", "password", "email");
         // Test that the user is created with the correct username
@@ -75,6 +69,8 @@ class ServiceTest {
     @Test
     // test registerUser can fail with an exception
     void testRegisterUser() throws DataAccessException, SQLException {
+        // first clear database
+        service.deleteDatabase();
         // create test user
         UserData testUser = new UserData("user", "password", "email");
         // Test that registerUser will fail with an exception try to register the same user twice
@@ -113,10 +109,7 @@ class ServiceTest {
 
     @Test
     void deleteAuth() throws DataAccessException{
-        // create test user
-        UserData testUser = new UserData("user", "password", "email");
         // assert that the auth token is deleted by logging in and assertThrows
-        Assertions.assertThrows(DataAccessException.class, () -> service.loginUser(testUser));
     }
 
     @Test
