@@ -1,6 +1,8 @@
 package dataAccess;
 
 import model.UserData;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.sql.*;
 
@@ -97,7 +99,7 @@ public class DatabaseUser implements UserDataAccess{
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
-            throw new DataAccessException("there was an issue configuring the database");
+            throw new DataAccessException("there was an issue configuring the user database");
         }
     }
 }

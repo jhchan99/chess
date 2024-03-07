@@ -111,6 +111,14 @@ public class Server {
                 res.status(401);
                 return new Gson().toJson(Map.of("message", "Error: unauthorized"));
             }
+            if(e.getMessage().equals("User not found")){
+                res.status(400);
+                return new Gson().toJson(Map.of("message", "Error: bad request"));
+            }
+            if(e.getMessage().equals("Game name is null")){
+                res.status(400);
+                return new Gson().toJson(Map.of("message", "Error: bad request"));
+            }
         }
         return "Fix createGame";
     }
@@ -182,8 +190,8 @@ public class Server {
             service.deleteDatabase();
             res.status(200);
             return "{}";
-        } catch (DataAccessException e){
-            return "Fix me deleteDatabase";
+        } catch (DataAccessException | SQLException e){
+            return "Fix deleteDatabase";
         }
     }
 

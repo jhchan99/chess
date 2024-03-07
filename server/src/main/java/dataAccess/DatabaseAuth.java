@@ -51,14 +51,8 @@ public class DatabaseAuth implements AuthDataAccess{
     @Override
     public void deleteAuth(String auth) throws DataAccessException, SQLException {
         // delete a single authToken
-        try (var conn = DatabaseManager.getConnection()) {
-            var statement = "DELETE authToken FROM auth WHERE authToken=?";
-            try (var ps = conn.prepareStatement(statement)) {
-                ps.executeUpdate();
-            }
-        } catch (SQLException e) {
-            throw new DataAccessException("delete users failed while trying in DatabaseAuth");
-        }
+        var statement = "DELETE FROM auth WHERE authToken=?";
+        executeUpdate(statement, auth);
 
     }
 
@@ -92,6 +86,7 @@ public class DatabaseAuth implements AuthDataAccess{
 
             }
         } catch (SQLException e){
+            e.printStackTrace();
             throw new DataAccessException("trouble updating table");
         }
     }
@@ -115,7 +110,7 @@ public class DatabaseAuth implements AuthDataAccess{
                 }
             }
         } catch (SQLException ex) {
-            throw new DataAccessException("there was an issue configuring the database");
+            throw new DataAccessException("there was an issue configuring the auth database");
         }
     }
 }

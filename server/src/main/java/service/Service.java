@@ -6,6 +6,8 @@ import model.AuthData;
 import model.UserData;
 import model.GameData;
 import model.requests.JoinGameRequests;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.xml.crypto.Data;
 import java.sql.SQLException;
@@ -34,7 +36,15 @@ public class Service {
         }
     }
 
-    private final GameDataAccess gameAccess = new MemoryGame();
+    private final GameDataAccess gameAccess;
+
+    {
+        try {
+            gameAccess = new DatabaseGame();
+        } catch (DataAccessException | SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
     public AuthData loginUser(UserData user) throws DataAccessException, SQLException {
@@ -59,6 +69,9 @@ public class Service {
         if (user.username() == null || user.password() == null || user.email() == null) {
             throw new DataAccessException("Invalid user data");
         }
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String secret = encoder.encode(user.password());
+        user = new UserData(user.username(), secret, user.email());
         // create user
         userAccess.registerUser(user);
         // return new auth token
@@ -68,11 +81,12 @@ public class Service {
         }
     }
 
-    public void deleteDatabase() throws DataAccessException {
+    public void deleteDatabase() throws DataAccessException, SQLException {
         userAccess.deleteUsers();
         authAccess.deleteAllAuths();
         gameAccess.deleteGames();
     }
+
     public String createAuth(UserData user) throws DataAccessException {
         try {
             return authAccess.createAuth(user);
@@ -94,6 +108,10 @@ public class Service {
         // check if auth exists in database
             if (auth == null || authAccess.getAuth(auth) == null) {
                 throw new DataAccessException("Auth token not found");
+            }
+            // if gameName is null throw error
+            if(game.gameName() == null) {
+                throw new DataAccessException("Game name is null");
             }
             // create game
             return gameAccess.createGame(game.gameName());
