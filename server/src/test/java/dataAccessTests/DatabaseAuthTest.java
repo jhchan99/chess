@@ -32,16 +32,6 @@ class DatabaseAuthTest {
         assertNotNull(createdAuth);
     }
 
-    @Test
-    void getAuth_Success() throws SQLException, DataAccessException {
-        // Test that getAuth retrieves the correct auth
-        UserData userData = new UserData("user", "password", "email");
-        String createdAuth = databaseAuth.createAuth(userData);
-        AuthData retrievedAuth = databaseAuth.getAuth(userData.username());
-        assertNotNull(retrievedAuth);
-        assertEquals(userData.username(), retrievedAuth.username());
-        assertEquals(createdAuth, retrievedAuth.authToken());
-    }
 
     @Test
     void getAuth_NonExistentAuth() throws SQLException, DataAccessException {

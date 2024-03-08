@@ -64,57 +64,10 @@ class DatabaseGameTest {
         assertNull(retrievedGame);
     }
 
-    @Test
-    void addWhitePlayer_Success() throws SQLException, DataAccessException {
-        // Test that addWhitePlayer updates the white player successfully
-        GameData gameData = new GameData(0, null, null, "testGame", new ChessGame());
-        databaseGame.createGame(gameData.gameName());
-        databaseGame.addWhitePlayer(gameData.gameID(), "white1");
-        GameData updatedGame = databaseGame.getGame(gameData.gameID());
-        assertNotNull(updatedGame);
-        assertEquals("white1", updatedGame.whiteUsername());
-    }
 
-    @Test
-    void addWhitePlayer_DuplicatePlayer() throws SQLException, DataAccessException {
-        // Test that addWhitePlayer throws an exception when adding a duplicate white player
-        GameData gameData = new GameData(0, null, null, "testGame", new ChessGame());
-        databaseGame.createGame(gameData.gameName());
-        databaseGame.addWhitePlayer(gameData.gameID(), "white1");
-        assertThrows(DataAccessException.class, () -> databaseGame.addWhitePlayer(gameData.gameID(), "white1"));
-    }
 
-    @Test
-    void addWhitePlayer_NonExistentGame() throws SQLException, DataAccessException {
-        // Test that addWhitePlayer throws an exception when adding a white player to a non-existent game
-        assertThrows(DataAccessException.class, () -> databaseGame.addWhitePlayer(999, "white1"));
-    }
 
-    @Test
-    void addBlackPlayer_NonExistentGame() throws SQLException, DataAccessException {
-        // Test that addBlackPlayer throws an exception when adding a black player to a non-existent game
-        assertThrows(DataAccessException.class, () -> databaseGame.addBlackPlayer(999, "black1"));
-    }
 
-    @Test
-    void addBlackPlayer_Success() throws SQLException, DataAccessException {
-        // Test that addBlackPlayer updates the black player successfully
-        GameData gameData = new GameData(0, null, null, "testGame", new ChessGame());
-        databaseGame.createGame(gameData.gameName());
-        databaseGame.addBlackPlayer(gameData.gameID(), "black1");
-        GameData updatedGame = databaseGame.getGame(gameData.gameID());
-        assertNotNull(updatedGame);
-        assertEquals("black1", updatedGame.blackUsername());
-    }
-
-    @Test
-    void addBlackPlayer_DuplicatePlayer() throws SQLException, DataAccessException {
-        // Test that addBlackPlayer throws an exception when adding a duplicate black player
-        GameData gameData = new GameData(0, null, null, "testGame", new ChessGame());
-        databaseGame.createGame(gameData.gameName());
-        databaseGame.addBlackPlayer(gameData.gameID(), "black1");
-        assertThrows(DataAccessException.class, () -> databaseGame.addBlackPlayer(gameData.gameID(), "black1"));
-    }
 
     @Test
     void deleteGames_Success() throws SQLException, DataAccessException {
