@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
@@ -73,12 +74,14 @@ public class DatabaseGame implements GameDataAccess {
 
     @Override
     public void addWhitePlayer(int gameId, String username) throws DataAccessException, SQLException {
+        // if player already exists throw exception
         var statement = "UPDATE game SET whiteUsername=? WHERE gameId=?";
         executeUpdate(statement, username, gameId);
     }
 
     @Override
     public void addBlackPlayer(int gameId, String username) throws DataAccessException, SQLException {
+        // if player already exists throw exception
         var statement = "UPDATE game SET blackUsername=? WHERE gameId=?";
         executeUpdate(statement, username, gameId);
     }
@@ -93,12 +96,12 @@ public class DatabaseGame implements GameDataAccess {
         } catch (SQLException e) {
             e.printStackTrace();
             throw new DataAccessException("delete users failed");
-
         }
     }
 
     @Override
     public Collection<GameData> listGames() throws DataAccessException {
+        var games = new ArrayList<GameData>();
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, ChessGame FROM game";
             try (var ps = conn.prepareStatement(statement)) {
@@ -118,6 +121,7 @@ public class DatabaseGame implements GameDataAccess {
             e.printStackTrace();
             throw new DataAccessException("get user failed");
         }
+        // return all games in games then clear games
         return games;
     }
 
@@ -148,7 +152,7 @@ public class DatabaseGame implements GameDataAccess {
               `gameId` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
               `whiteUsername` varchar(256),
               `blackUsername` varchar(256),
-              `gameName` varchar(256) NOT NULL,
+              `gameName` varchar(256) NOT NULL UNIQUE,
               `ChessGame` TEXT NOT NULL
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """

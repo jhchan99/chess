@@ -15,15 +15,21 @@ public class DatabaseAuth implements AuthDataAccess{
     public DatabaseAuth() throws DataAccessException {
         configureDatabase();
     }
+
     @Override
     public String createAuth(UserData user) throws DataAccessException, SQLException {
-        // create new auth for user
+        // Check if an auth token already exists for the user
+        AuthData existingAuth = getAuth(user.username());
+        if (existingAuth != null) {
+            throw new DataAccessException("Auth token already exists for the user");
+        }
+
+        // Create new auth for user
         String authToken = UUID.randomUUID().toString();
-        // add auth to database
+        // Add auth to database
         var statement = "INSERT INTO auth (username, authToken) VALUES (?, ?)";
         executeUpdate(statement, user.username(), authToken);
         return authToken;
-
     }
 
     @Override
@@ -94,8 +100,8 @@ public class DatabaseAuth implements AuthDataAccess{
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS  auth (
-              `username` varchar(256) NOT NULL PRIMARY KEY,
-              `authToken` varchar(256) NOT NULL
+              `username` varchar(256) NOT NULL,
+              `authToken` varchar(256) NOT NULL UNIQUE PRIMARY KEY
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
