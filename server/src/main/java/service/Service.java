@@ -50,8 +50,9 @@ public class Service {
     public AuthData loginUser(UserData user) throws DataAccessException, SQLException {
         // Check if user exists
         UserData user1 = userAccess.getUser(user);
+        // check password using bcrypt
         // If user exists and password matches, return new auth token
-        if (user1 != null && Objects.equals(user1.password(), user.password())) {
+        if (user1 != null && BCrypt.checkpw(user.password(), user1.password())) {
             // get new auth token for user return auth token
             return new AuthData(user1.username(), createAuth(user1));
         }

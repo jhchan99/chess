@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
@@ -17,7 +18,7 @@ public class DatabaseGame implements GameDataAccess {
     // add logging to all methods
     private static final Logger logger = Logger.getLogger(DatabaseGame.class.getName());
 
-    public Collection<GameData> gameList = new ArrayList<>();
+    private final ArrayList<GameData> games = new ArrayList<>();
 
     public DatabaseGame() throws DataAccessException, SQLException {
         configureDatabase();
@@ -72,20 +73,28 @@ public class DatabaseGame implements GameDataAccess {
 
     @Override
     public void addWhitePlayer(int gameId, String username) throws DataAccessException, SQLException {
-        var statement = "INSERT INTO game (whiteUsername=?) WHERE gameId=?";
+        var statement = "UPDATE game SET whiteUsername=? WHERE gameId=?";
         executeUpdate(statement, username, gameId);
     }
 
     @Override
     public void addBlackPlayer(int gameId, String username) throws DataAccessException, SQLException {
-        var statement = "INSERT INTO game (blackUsername=?) WHERE gameId=?";
+        var statement = "UPDATE game SET blackUsername=? WHERE gameId=?";
         executeUpdate(statement, username, gameId);
     }
 
     @Override
     public void deleteGames() throws DataAccessException, SQLException {
-        var statement = "DELETE FROM game";
-        executeUpdate(statement);
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "DELETE FROM game";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.executeUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DataAccessException("delete users failed");
+
+        }
     }
 
     @Override
@@ -94,14 +103,14 @@ public class DatabaseGame implements GameDataAccess {
             var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, ChessGame FROM game";
             try (var ps = conn.prepareStatement(statement)) {
                 try (var rs = ps.executeQuery()) {
-                    if (rs.next()) {
+                    while (rs.next()) {
                         int gameID = rs.getInt("gameID");
                         String whiteUsername = rs.getString("whiteUsername");
                         String blackUsername = rs.getString("blackUsername");
                         String gameName = rs.getString("gameName");
                         ChessGame chessGame = new Gson().fromJson(rs.getString("ChessGame"), ChessGame.class);
 
-                        gameList.add(new GameData(gameID, whiteUsername, blackUsername, gameName, chessGame));
+                        games.add(new GameData(gameID, whiteUsername, blackUsername, gameName, chessGame));
                     }
                 }
             }
@@ -109,10 +118,7 @@ public class DatabaseGame implements GameDataAccess {
             e.printStackTrace();
             throw new DataAccessException("get user failed");
         }
-        if(gameList.isEmpty()){
-            return null;
-        }
-        return gameList;
+        return games;
     }
 
     private void executeUpdate(String statement, Object... params) throws DataAccessException, SQLException {
@@ -120,18 +126,16 @@ public class DatabaseGame implements GameDataAccess {
             try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 for (var i = 0; i < params.length; i++) {
                     var param = params[i];
-                    if (param instanceof String p) ps.setString(i + 1, p);
-                    else if (param instanceof Integer p) ps.setInt(i + 1, p);
-                    else if (param instanceof ChessGame p) ps.setString(i + 1, p.toString());
-                    else if (param == null) ps.setNull(i + 1, NULL);
+                    switch (param) {
+                        case String p -> ps.setString(i + 1, p);
+                        case Integer p -> ps.setInt(i + 1, p);
+                        case ChessGame p -> ps.setString(i + 1, p.toString());
+                        case null -> ps.setNull(i + 1, NULL);
+                        default -> {
+                        }
+                    }
                 }
                 ps.executeUpdate();
-
-                var rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    rs.getInt(1);
-                }
-
             }
         } catch (SQLException e) {
             throw new DataAccessException("problem in executeUpdate");
