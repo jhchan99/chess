@@ -167,7 +167,6 @@ public class DatabaseGame implements GameDataAccess {
                 }
             }
         } catch (SQLException ex) {
-            ex.printStackTrace();
             throw new DataAccessException("problem configuring game database");
         }
     }

@@ -48,7 +48,6 @@ public class DatabaseAuth implements AuthDataAccess{
             }
         }
         catch (SQLException e) {
-            e.printStackTrace();
             throw new DataAccessException("getAuth failed while trying to retrieve from DatabaseAuth");
         }
         return null;
@@ -92,7 +91,6 @@ public class DatabaseAuth implements AuthDataAccess{
 
             }
         } catch (SQLException e){
-            e.printStackTrace();
             throw new DataAccessException("trouble updating table");
         }
     }

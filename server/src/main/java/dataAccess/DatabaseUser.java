@@ -98,7 +98,6 @@ public class DatabaseUser implements UserDataAccess{
                 }
             }
         } catch (SQLException ex) {
-            ex.printStackTrace();
             throw new DataAccessException("there was an issue configuring the user database");
         }
     }
