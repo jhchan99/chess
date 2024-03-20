@@ -45,7 +45,7 @@ public class Server {
         Spark.awaitStop();
     }
 
-    private Object registerUser(Request req, Response res) throws DataAccessException {
+    private Object registerUser(Request req, Response res) {
         try {
             var user = new Gson().fromJson(req.body(), UserData.class);
             var newAuth = service.registerUser(user);
