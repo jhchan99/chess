@@ -1,5 +1,6 @@
 package clientTests;
 
+import chess.ChessGame;
 import exception.ResponseException;
 import org.junit.jupiter.api.*;
 import server.Server;
@@ -16,7 +17,6 @@ public class ServerFacadeTests {
         server = new Server();
         var port = server.run(0);
         serverFacade = new ServerFacade("http://localhost:" + port);
-        serverFacade.deleteData();
         System.out.println("Started test HTTP server on " + port);
     }
 
@@ -33,12 +33,14 @@ public class ServerFacadeTests {
     @Test
     public void testTryLoginAfterDeleteData() throws ResponseException {
         // test that exception is thrown
+        serverFacade.deleteData();
         Assertions.assertThrows(ResponseException.class, () -> serverFacade.loginUser("password", "user"));
     }
 
     @Test
     public void testRegisterUser() throws ResponseException {
         // test that auth token is returned
+        serverFacade.deleteData();
         var token = serverFacade.registerUser("user", "password", "email");
         Assertions.assertNotNull(token);
     }
@@ -46,6 +48,7 @@ public class ServerFacadeTests {
     @Test
     public void testLoginUser() throws ResponseException {
         // test that auth token is returned
+        serverFacade.deleteData();
         serverFacade.registerUser("user", "password", "email");
         var token = serverFacade.loginUser("password", "user");
         Assertions.assertNotNull(token);
@@ -61,6 +64,7 @@ public class ServerFacadeTests {
     @Test
     public void testLogoutUser() throws ResponseException {
         // test that no exception is thrown
+        serverFacade.deleteData();
         serverFacade.registerUser("user", "password", "email");
         serverFacade.loginUser("password", "user");
         serverFacade.logoutUser();
@@ -69,9 +73,19 @@ public class ServerFacadeTests {
     @Test
     public void testCreateGame() throws ResponseException {
         // test that game id is returned
-        var token = serverFacade.registerUser("user", "password", "email");
-        var gameId = serverFacade.createGame(token, "game");
+        serverFacade.deleteData();
+        serverFacade.registerUser("user", "password", "email");
+        var gameId = serverFacade.createGame("game");
         Assertions.assertTrue(gameId > 0);
+    }
+
+    @Test
+    public void testJoinGame() throws ResponseException {
+        // test that no exception is thrown
+        serverFacade.deleteData();
+        serverFacade.registerUser("user", "password", "email");
+        var gameId = serverFacade.createGame("game");
+        serverFacade.joinGame(gameId, ChessGame.TeamColor.WHITE);
     }
 
 

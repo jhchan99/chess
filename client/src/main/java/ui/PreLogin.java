@@ -1,6 +1,7 @@
 package ui;
 
 import exception.ResponseException;
+import model.GameData;
 import web.ServerFacade;
 
 import java.util.Arrays;
@@ -20,10 +21,12 @@ public class PreLogin {
         try {
             var tokens = input.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
-            var params = Arrays.copyOfRange(tokens, 1, tokens.length);
+            var params = Arrays.copyOfRange(tokens, 1, tokens.length);;
             return switch (cmd) {
                 case "signup" -> signUp(params);
                 case "login" -> login(params);
+                case "help" -> help();
+                case "logout" -> logout();
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -32,38 +35,38 @@ public class PreLogin {
         }
     }
 
+
+    private String logout() throws ResponseException {
+        state = State.SIGNEDOUT;
+        server.logoutUser();
+        return "You have been signed out.";
+    }
+
     private String signUp(String[] params) throws ResponseException {
         if (params.length >= 1) {
-            state = State.SIGNEDIN;
-            username = String.join("-", params);
-            return String.format("You signed in as %s.", username);
+            var response = server.registerUser(params[0], params[1], params[2]);
+            if(response != null) {
+                state = State.SIGNEDIN;
+            }
+            return String.format(response);
         }
-        throw new ResponseException(400, "Expected: <yourname>");
+        throw new ResponseException(400, "Expected: <username> <password> <email>");
 
     }
 
     private String login(String[] params) throws ResponseException {
-        if (params.length >= 1) {
+        if (params.length >= 2) {
             state = State.SIGNEDIN;
-            username = String.join("-", params);
+            server.loginUser(params[0], params[1]);
             return String.format("You signed in as %s.", username);
         }
-        throw new ResponseException(400, "Expected: <yourname>");
+        throw new ResponseException(400, "Expected: <username>");
     }
 
     public String help() {
-        if (state == State.SIGNEDOUT) {
-            return """
-                    - signIn <yourname>
-                    - quit
-                    """;
-        }
-        return """
-                - list
-                - adopt <pet id>
-                - rescue <name> <CAT|DOG|FROG|FISH>
-                - adoptAll
-                - signOut
+        return"""
+                - login <username> <password>
+                - signup <username> <password> <email>
                 - quit
                 """;
     }

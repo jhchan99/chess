@@ -1,10 +1,12 @@
 package web;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+import model.requests.JoinGameRequests;
 
 
 import java.io.IOException;
@@ -60,23 +62,26 @@ public class ServerFacade {
         this.authToken = null;
     }
 
-    public int createGame(String auth, String gameName) throws ResponseException {
-        var path = String.format("/game?auth=%s", auth);
-        var game = new GameData(0, null, null, gameName, null);
-        record createGameResponse(Integer id) {
+    public int createGame(String gameName) throws ResponseException {
+        var path = String.format("/game?auth=%s", this.authToken);
+        var game = new GameData(3, null, null, gameName, null);
+        record createGameResponse(int gameID) {
         }
         var response = this.makeRequest("POST", path, game, createGameResponse.class);
-        // issue with the response id its returning null throwing an error
-        return response.id();
+        // issue with the response id it's not getting a game
+        return response.gameID();
     }
 
-    public void joinGame(int gameID, String teamColor) {
+    public void joinGame(int gameID, ChessGame.TeamColor teamColor) throws ResponseException {
         var path = String.format("/game?auth=%s", authToken);
-        var game = new JoinGameRequest(gameID, teamColor);
+        var game = new JoinGameRequests(teamColor, gameID);
+        record joinGameResponse() {
+        }
+        this.makeRequest("PUT", path, game, joinGameResponse.class);
     }
 
     public GameData[] listGames() throws ResponseException {
-        var path = "/game";
+        var path = String.format("/game?auth=%s", authToken);
         record listGameResponse(GameData[] game) {
         }
         var response = this.makeRequest("GET", path, null, listGameResponse.class);
@@ -99,7 +104,6 @@ public class ServerFacade {
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
         } catch (Exception ex) {
-            ex.printStackTrace();
             throw new ResponseException(500, ex.getMessage());
         }
     }
