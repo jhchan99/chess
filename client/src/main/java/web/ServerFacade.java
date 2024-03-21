@@ -25,30 +25,54 @@ public class ServerFacade {
         this.serverUrl = serverUrl;
     }
 
+    public void deleteData() throws ResponseException {
+        var path = "/db";
+        this.makeRequest("DELETE", path, null, null);
+    }
+
     public String registerUser(String name, String pass, String email) throws ResponseException {
+        this.authToken = null;
         var path = "/user";
-        UserData user = new UserData(name, pass, email);
-        AuthData newAuth = this.makeRequest("POST", path, user, AuthData.class);
-        authToken = newAuth.authToken();
-        return name;
+        var user = new UserData(name, pass, email);
+        record registerUserResponse(String authToken) {
+        }
+        var response = this.makeRequest("POST", path, user, registerUserResponse.class);
+        this.authToken = response.authToken();
+        // issue with this
+        return this.authToken;
     }
 
-    public AuthData loginUser(String pass, String user) throws ResponseException {
-        var path = String.format("/user/%s", authToken);
-        return this.makeRequest("SESSION", path, null, null);
+    public String loginUser(String pass, String user) throws ResponseException {
+        this.authToken = null;
+        var path = "/session";
+        var userAuth = new UserData(user, pass, null);
+        record loginUserResponse(String authToken) {
+        }
+        var response = this.makeRequest("POST", path, userAuth, loginUserResponse.class);
+        this.authToken = response.authToken();
+        // issue with this
+        return this.authToken;
     }
 
-    public void logoutUser(String auth) throws ResponseException {
-        var path = String.format("/user/%s",auth );
-        this.makeRequest("SESSION", path, null, null);
+    public void logoutUser() throws ResponseException {
+        var path =  String.format("/session?auth=%s", authToken);
+        this.makeRequest("DELETE", path, null, null);
+        this.authToken = null;
     }
 
-    public void createGame(String auth, int gameID) {
-
+    public int createGame(String auth, String gameName) throws ResponseException {
+        var path = String.format("/game?auth=%s", auth);
+        var game = new GameData(0, null, null, gameName, null);
+        record createGameResponse(Integer id) {
+        }
+        var response = this.makeRequest("POST", path, game, createGameResponse.class);
+        // issue with the response id its returning null throwing an error
+        return response.id();
     }
 
-    public void joinGame(String auth, int gameID) {
-
+    public void joinGame(int gameID, String teamColor) {
+        var path = String.format("/game?auth=%s", authToken);
+        var game = new JoinGameRequest(gameID, teamColor);
     }
 
     public GameData[] listGames() throws ResponseException {
@@ -59,16 +83,14 @@ public class ServerFacade {
         return response.game();
     }
 
-
-
-
-
-
-
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
+            // if the http request has an auth token, add auth to the header
+            if (this.authToken != null) {
+                http.setRequestProperty("Authorization", this.authToken);
+            }
             http.setRequestMethod(method);
             http.setDoOutput(true);
 
@@ -77,6 +99,7 @@ public class ServerFacade {
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new ResponseException(500, ex.getMessage());
         }
     }
