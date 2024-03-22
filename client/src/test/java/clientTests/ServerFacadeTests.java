@@ -50,7 +50,7 @@ public class ServerFacadeTests {
         // test that auth token is returned
         serverFacade.deleteData();
         serverFacade.registerUser("user", "password", "email");
-        var token = serverFacade.loginUser("password", "user");
+        var token = serverFacade.loginUser("user", "password");
         Assertions.assertNotNull(token);
     }
 
@@ -66,7 +66,7 @@ public class ServerFacadeTests {
         // test that no exception is thrown
         serverFacade.deleteData();
         serverFacade.registerUser("user", "password", "email");
-        serverFacade.loginUser("password", "user");
+        serverFacade.loginUser("user", "password");
         serverFacade.logoutUser();
     }
 
@@ -75,6 +75,17 @@ public class ServerFacadeTests {
         // test that game id is returned
         serverFacade.deleteData();
         serverFacade.registerUser("user", "password", "email");
+        var gameId = serverFacade.createGame("game");
+        Assertions.assertTrue(gameId > 0);
+    }
+
+    @Test
+    public void testCreateGameAfterLogin() throws ResponseException {
+        // test that game id is returned
+        serverFacade.deleteData();
+        serverFacade.registerUser("user", "password", "email");
+        serverFacade.logoutUser();
+        serverFacade.loginUser("user", "password");
         var gameId = serverFacade.createGame("game");
         Assertions.assertTrue(gameId > 0);
     }

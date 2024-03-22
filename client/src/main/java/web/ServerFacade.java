@@ -33,33 +33,33 @@ public class ServerFacade {
     }
 
     public String registerUser(String name, String pass, String email) throws ResponseException {
-        this.authToken = null;
+        authToken = null;
         var path = "/user";
         var user = new UserData(name, pass, email);
         record registerUserResponse(String authToken) {
         }
         var response = this.makeRequest("POST", path, user, registerUserResponse.class);
         this.authToken = response.authToken();
-        // issue with this
-        return this.authToken;
+        return user.username();
     }
 
-    public String loginUser(String pass, String user) throws ResponseException {
-        this.authToken = null;
+    public String loginUser(String user, String pass) throws ResponseException {
+        authToken = null;
         var path = "/session";
         var userAuth = new UserData(user, pass, null);
         record loginUserResponse(String authToken) {
         }
         var response = this.makeRequest("POST", path, userAuth, loginUserResponse.class);
         this.authToken = response.authToken();
-        // issue with this
-        return this.authToken;
+        return authToken;
     }
 
-    public void logoutUser() throws ResponseException {
-        var path =  String.format("/session?auth=%s", authToken);
+    public Boolean logoutUser() throws ResponseException {
+        var path =  String.format("/session?auth=%s", this.authToken);
+        System.out.println(this.authToken);
         this.makeRequest("DELETE", path, null, null);
-        this.authToken = null;
+        authToken = null;
+        return true;
     }
 
     public int createGame(String gameName) throws ResponseException {
@@ -67,9 +67,10 @@ public class ServerFacade {
         var game = new GameData(3, null, null, gameName, null);
         record createGameResponse(int gameID) {
         }
+        System.out.println(authToken);
         var response = this.makeRequest("POST", path, game, createGameResponse.class);
         // issue with the response id it's not getting a game
-        return response.gameID();
+        return (response.gameID());
     }
 
     public void joinGame(int gameID, ChessGame.TeamColor teamColor) throws ResponseException {
@@ -93,11 +94,11 @@ public class ServerFacade {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             // if the http request has an auth token, add auth to the header
-            if (this.authToken != null) {
-                http.setRequestProperty("Authorization", this.authToken);
+            if (authToken != null) {
+                http.setRequestProperty("Authorization", authToken);
             }
             http.setRequestMethod(method);
-            http.setDoOutput(true);
+            http.setDoOutput(!method.equals("GET"));
 
             writeBody(request, http);
             http.connect();

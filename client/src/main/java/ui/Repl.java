@@ -1,8 +1,5 @@
 package ui;
 
-import ui.PostLogin;
-import ui.PreLogin;
-
 import static ui.EscapeSequences.*;
 
 import java.util.Scanner;
@@ -12,9 +9,15 @@ public class Repl {
     private final PreLogin preLoginClient;
     private final PostLogin postLoginClient;
 
+    public static void setState(State state) {
+        Repl.state = state;
+    }
+
+    private static State state = State.SIGNEDOUT;
+
     public Repl(String serverUrl) {
         preLoginClient = new PreLogin(serverUrl);
-        postLoginClient = new PostLogin();
+        postLoginClient = new PostLogin(serverUrl);
     }
 
     public void run() {
@@ -28,8 +31,13 @@ public class Repl {
             String line = scanner.nextLine();
 
             try {
-                result = preLoginClient.eval(line);
-                System.out.print(result);
+                if (state == State.SIGNEDIN) {
+                    result = postLoginClient.eval(line);
+                    System.out.print(result);
+                } else {
+                    result = preLoginClient.eval(line);
+                    System.out.print(result);
+                }
             } catch (Throwable e) {
                 var msg = e.toString();
                 System.out.print(msg);
@@ -43,5 +51,7 @@ public class Repl {
         System.out.print("\n" + SET_BG_COLOR_BLACK + ">>> " + SET_TEXT_COLOR_WHITE);
 
     }
+
+
 
 }

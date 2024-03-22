@@ -25,8 +25,10 @@ public class PreLoginTests {
     }
 
     @Test
-    public void signIn() throws ResponseException {
-        // test t
+    // write to the cmd testing login
+    public void testLogin() {
+        // test login
+        System.out.println("login james pass");
     }
 
 }
