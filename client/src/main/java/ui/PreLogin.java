@@ -10,8 +10,8 @@ public class PreLogin {
     private String username;
     private final ServerFacade serverFacade;
 
-    public PreLogin(String serverURL) {
-        serverFacade = new ServerFacade(serverURL);
+    public PreLogin(ServerFacade serverFacade) {
+        this.serverFacade = serverFacade;
     }
 
     public String eval(String input) {

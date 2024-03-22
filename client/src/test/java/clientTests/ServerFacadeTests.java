@@ -21,7 +21,8 @@ public class ServerFacadeTests {
     }
 
     @AfterAll
-    static void stopServer() {
+    static void stopServer() throws ResponseException {
+        serverFacade.deleteData();
         server.stop();
     }
 
@@ -99,6 +100,26 @@ public class ServerFacadeTests {
         serverFacade.joinGame(gameId, ChessGame.TeamColor.WHITE);
     }
 
+    @Test
+    public void testListGames() throws ResponseException {
+        // test that no exception is thrown
+        serverFacade.deleteData();
+        serverFacade.registerUser("user", "password", "email");
+        serverFacade.createGame("game");
+        serverFacade.listGames();
+    }
+
+    @Test
+    public void testListGamesReturnsGames() throws ResponseException {
+        // test that no exception is thrown
+        serverFacade.deleteData();
+        serverFacade.registerUser("user", "password", "email");
+        serverFacade.createGame("game");
+        serverFacade.createGame("game2");
+        serverFacade.createGame("game3");
+        var games = serverFacade.listGames();
+        Assertions.assertTrue(games.length > 0);
+    }
 
 
 }

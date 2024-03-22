@@ -1,19 +1,24 @@
 package ui;
 
+import chess.ChessGame;
+import com.google.gson.Gson;
 import exception.ResponseException;
 import model.GameData;
+import server.Server;
 import web.ServerFacade;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public class PostLogin {
 
     private String username;
     private final ServerFacade serverFacade;
-    private State state = State.SIGNEDIN;
+    private final State state = State.SIGNEDIN;
+    private final DrawBoard board = new DrawBoard();
 
-    public PostLogin(String serverURL) {
-        serverFacade = new ServerFacade(serverURL);
+    public PostLogin(ServerFacade serverFacade) {
+        this.serverFacade = serverFacade;
     }
 
 
@@ -25,32 +30,60 @@ public class PostLogin {
             return switch (cmd) {
                 case "logout" -> logout();
                 case "create" -> createGame(params);
-//                case "join" -> joinGame(params);
-//                case "list" -> listGames();
-//                case "quit" -> "quit";
+                case "join" -> joinGame(params);
+                case "list" -> listGames();
+                case "quit" -> quit();
                 default -> help();
             };
         } catch (ResponseException ex) {
             return ex.getMessage();
         }
     }
-//
-//    private GameData[] listGames() throws ResponseException {
-//        assertSignedIn();
-//        return server.listGames();
-//    }
-//
-//    private void joinGame(params) throws ResponseException {
-//        assertSignedIn();
-//        if (params.length >= 1) {
-//            server.joinGame(params[0]);
-//        }
-//        throw new ResponseException(400, "Expected: <gameID>");
-//    }
-//
+    private String quit() throws ResponseException {
+        serverFacade.logoutUser();
+        return "quit";
+    }
+
+    private String listGames() throws ResponseException {
+        assertSignedIn();
+        var games = serverFacade.listGames();
+        var result = new StringBuilder();
+        var gson = new Gson();
+        result.append("Games:\n");
+        for (var game : games) {
+            var name = game.gameName();
+            var id = game.gameID();
+            var white = game.whiteUsername();
+            var black = game.blackUsername();
+            result.append(String.format("gameID: %s, whiteUsername: %s, blackUsername: %s, gameName: %s\n", id, white, black, name));
+        }
+        return result.toString();
+    }
+
+    private String joinGame(String[] params) throws ResponseException {
+        assertSignedIn();
+        if (params.length >= 2) {
+            if (Objects.equals(params[1], "white")) {
+                serverFacade.joinGame(Integer.parseInt(params[0]), ChessGame.TeamColor.WHITE);
+                board.drawWhite();
+            } else if (Objects.equals(params[1], "black")) {
+                serverFacade.joinGame(Integer.parseInt(params[0]), ChessGame.TeamColor.BLACK);
+                board.drawBlack();
+            } else {
+                throw new ResponseException(400, "Expected: <gameID> <white|black>");
+            }
+        } else if(params.length == 1) {
+            serverFacade.joinGame(Integer.parseInt(params[0]), null);
+            board.drawWhite();
+            board.drawBlack();
+            return String.format("You have joined game %s as an observer", params[0]);
+        } else {throw new ResponseException(400, "Expected: <gameID>");}
+        return String.format("You have joined game %s as %s.", params[0], params[1]);
+    }
+
     private String createGame(String[] params) throws ResponseException {
         assertSignedIn();
-        if (params.length >= 1) {
+        if(params.length >= 1) {
             return String.valueOf(serverFacade.createGame(params[0]));
         }
         throw new ResponseException(400, "Expected: <gameName>");
@@ -58,7 +91,7 @@ public class PostLogin {
 
     private String logout() throws ResponseException {
         if(serverFacade.logoutUser()){
-            state = State.SIGNEDOUT;
+            Repl.setState(State.SIGNEDOUT);
         }
         return "You have been signed out.";
     }
@@ -67,7 +100,7 @@ public class PostLogin {
         return"""
                 - logout
                 - create <gameName>
-                - join <gameID>
+                - join <gameID> <white|black>
                 - list
                 - quit
                 """;

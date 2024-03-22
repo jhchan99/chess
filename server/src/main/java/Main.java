@@ -4,8 +4,6 @@ import dataAccess.DatabaseManager;
 import server.Server;
 
 public class Main {
-
-
     public static void main(String[] args) {
         try {
             var port = 8080;
@@ -19,8 +17,4 @@ public class Main {
             System.out.printf("Unable to start server: %s%n", ex.getMessage());
         }
     }
-
-
-
-
 }

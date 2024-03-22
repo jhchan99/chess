@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
+import model.ListGameResults;
 import model.UserData;
 import model.requests.JoinGameRequests;
 
@@ -16,6 +17,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class ServerFacade {
 
@@ -51,7 +54,7 @@ public class ServerFacade {
         }
         var response = this.makeRequest("POST", path, userAuth, loginUserResponse.class);
         this.authToken = response.authToken();
-        return authToken;
+        return userAuth.username();
     }
 
     public Boolean logoutUser() throws ResponseException {
@@ -63,11 +66,10 @@ public class ServerFacade {
     }
 
     public int createGame(String gameName) throws ResponseException {
-        var path = String.format("/game?auth=%s", this.authToken);
-        var game = new GameData(3, null, null, gameName, null);
+        var path = String.format("/game?auth=%s", authToken);
+        var game = new GameData(0, null, null, gameName, null);
         record createGameResponse(int gameID) {
         }
-        System.out.println(authToken);
         var response = this.makeRequest("POST", path, game, createGameResponse.class);
         // issue with the response id it's not getting a game
         return (response.gameID());
@@ -83,10 +85,9 @@ public class ServerFacade {
 
     public GameData[] listGames() throws ResponseException {
         var path = String.format("/game?auth=%s", authToken);
-        record listGameResponse(GameData[] game) {
-        }
-        var response = this.makeRequest("GET", path, null, listGameResponse.class);
-        return response.game();
+
+        var response = this.makeRequest("GET", path,null , ListGameResults.class);
+        return response.games();
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
@@ -94,8 +95,8 @@ public class ServerFacade {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             // if the http request has an auth token, add auth to the header
-            if (authToken != null) {
-                http.setRequestProperty("Authorization", authToken);
+            if (this.authToken != null) {
+                http.setRequestProperty("Authorization", this.authToken);
             }
             http.setRequestMethod(method);
             http.setDoOutput(!method.equals("GET"));
