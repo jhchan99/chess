@@ -64,11 +64,12 @@ public class ServerFacadeTests {
 
     @Test
     public void testLogoutUser() throws ResponseException {
-        // test that no exception is thrown
+        // test that exception is thrown if try to access a protected route
         serverFacade.deleteData();
         serverFacade.registerUser("user", "password", "email");
         serverFacade.loginUser("user", "password");
         serverFacade.logoutUser();
+        Assertions.assertThrows(ResponseException.class, () -> serverFacade.createGame("game"));
     }
 
     @Test
@@ -102,7 +103,7 @@ public class ServerFacadeTests {
 
     @Test
     public void testListGames() throws ResponseException {
-        // test that no exception is thrown
+        // test that exception is thrown
         serverFacade.deleteData();
         serverFacade.registerUser("user", "password", "email");
         serverFacade.createGame("game");
