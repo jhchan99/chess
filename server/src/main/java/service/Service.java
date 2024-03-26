@@ -136,6 +136,7 @@ public class Service {
         if(game.whiteUsername() != null && game.blackUsername() != null) {
             throw new DataAccessException("Game is full");
         }
+
         // if player wants to be a watcher
         if(joinReqs.playerColor() == null){
             return;
@@ -151,7 +152,8 @@ public class Service {
                 throw new DataAccessException("Black player is taken");
             }
             gameAccess.addBlackPlayer(game.gameID(), user.username());
-        }
+        } // if player wants to be a watcher
+
     }
 
     public Collection<GameData> listGames (String auth) throws DataAccessException, SQLException {

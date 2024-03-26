@@ -59,7 +59,6 @@ public class ServerFacade {
 
     public Boolean logoutUser() throws ResponseException {
         var path =  String.format("/session?auth=%s", this.authToken);
-        System.out.println(this.authToken);
         this.makeRequest("DELETE", path, null, null);
         authToken = null;
         return true;

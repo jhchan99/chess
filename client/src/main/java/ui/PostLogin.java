@@ -75,7 +75,6 @@ public class PostLogin {
         } else if(params.length == 1) {
             serverFacade.joinGame(Integer.parseInt(params[0]), null);
             board.drawWhite();
-            board.drawBlack();
             return String.format("You have joined game %s as an observer", params[0]);
         } else {throw new ResponseException(400, "Expected: <gameID>");}
         return String.format("You have joined game %s as %s.", params[0], params[1]);
@@ -101,6 +100,7 @@ public class PostLogin {
                 - logout
                 - create <gameName>
                 - join <gameID> <white|black>
+                - (as observer) join <gameID>
                 - list
                 - quit
                 """;
