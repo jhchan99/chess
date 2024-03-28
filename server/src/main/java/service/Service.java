@@ -134,13 +134,13 @@ public class Service {
         UserData user = userAccess.getUser(new UserData(authAccess.getAuth(auth).username(), null, null));
         // check if game is full
         if(game.whiteUsername() != null && game.blackUsername() != null) {
+            // if player wants to be a watcher
+            if(joinReqs.playerColor() == null){
+                return;
+            }
             throw new DataAccessException("Game is full");
         }
 
-        // if player wants to be a watcher
-        if(joinReqs.playerColor() == null){
-            return;
-        }
 
         if(joinReqs.playerColor() == ChessGame.TeamColor.WHITE) {
             if(game.whiteUsername() != null){

@@ -14,6 +14,10 @@ public class WebSocketFacade extends Endpoint {
     Session session;
     NotificationHandler notificationHandler;
 
+    // websocket commands are seperate from http requests !!!!!!!!
+
+
+
     public WebSocketFacade(String url, NotificationHandler notificationHandler) throws Exception{
         try {
             url = url.replace("http", "ws");

@@ -141,16 +141,16 @@ public class ServerFacadeTests {
         Assertions.assertThrows(ResponseException.class, () -> serverFacade.joinGame(gameId, ChessGame.TeamColor.WHITE));
     }
 
-//    @Test
-//    public void testJoinGameAsObserverWithFullGame() throws ResponseException {
-//        // test that exception is not thrown
-//        serverFacade.deleteData();
-//        serverFacade.registerUser("user", "password", "email");
-//        var gameId = serverFacade.createGame("game");
-//        serverFacade.joinGame(gameId, ChessGame.TeamColor.WHITE);
-//        serverFacade.joinGame(gameId, ChessGame.TeamColor.BLACK);
-//        serverFacade.joinGame(gameId, null);
-//    }
+    @Test
+    public void testJoinGameAsObserverWithFullGame() throws ResponseException {
+        // test that exception is not thrown
+        serverFacade.deleteData();
+        serverFacade.registerUser("user", "password", "email");
+        var gameId = serverFacade.createGame("game");
+        serverFacade.joinGame(gameId, ChessGame.TeamColor.WHITE);
+        serverFacade.joinGame(gameId, ChessGame.TeamColor.BLACK);
+        serverFacade.joinGame(gameId, null);
+    }
 
 
 

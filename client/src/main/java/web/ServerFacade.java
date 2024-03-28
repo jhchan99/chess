@@ -26,6 +26,10 @@ public class ServerFacade {
 
     private String authToken;
 
+    // websocket facade thing
+
+
+
     public ServerFacade(String serverUrl) {
         this.serverUrl = serverUrl;
     }
@@ -75,6 +79,8 @@ public class ServerFacade {
     }
 
     public void joinGame(int gameID, ChessGame.TeamColor teamColor) throws ResponseException {
+        // http first
+        // then websocket for notifications
         var path = String.format("/game?auth=%s", authToken);
         var game = new JoinGameRequests(teamColor, gameID);
         record joinGameResponse() {
