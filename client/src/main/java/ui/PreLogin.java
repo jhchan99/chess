@@ -7,7 +7,6 @@ import web.ServerFacade;
 import java.util.Arrays;
 
 public class PreLogin {
-    private String username;
     private final ServerFacade serverFacade;
 
     public PreLogin(ServerFacade serverFacade) {

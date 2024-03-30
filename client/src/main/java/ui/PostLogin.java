@@ -1,5 +1,6 @@
 package ui;
 
+import chess.ChessBoard;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
@@ -11,11 +12,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public class PostLogin {
-
-    private String username;
     private final ServerFacade serverFacade;
-    private final State state = State.SIGNEDIN;
-    private final DrawBoard board = new DrawBoard();
 
     public PostLogin(ServerFacade serverFacade) {
         this.serverFacade = serverFacade;
@@ -39,13 +36,15 @@ public class PostLogin {
             return ex.getMessage();
         }
     }
+
+
     private String quit() throws ResponseException {
         serverFacade.logoutUser();
         return "quit";
     }
 
+
     private String listGames() throws ResponseException {
-        assertSignedIn();
         var games = serverFacade.listGames();
         var result = new StringBuilder();
         var gson = new Gson();
@@ -60,33 +59,35 @@ public class PostLogin {
         return result.toString();
     }
 
+
     private String joinGame(String[] params) throws ResponseException {
-        assertSignedIn();
         if (params.length >= 2) {
             if (Objects.equals(params[1], "white")) {
                 serverFacade.joinGame(Integer.parseInt(params[0]), ChessGame.TeamColor.WHITE);
-                board.drawWhite();
+                GamePlay.setOrientation(BoardOrientation.WHITE);
             } else if (Objects.equals(params[1], "black")) {
                 serverFacade.joinGame(Integer.parseInt(params[0]), ChessGame.TeamColor.BLACK);
-                board.drawBlack();
+                GamePlay.setOrientation(BoardOrientation.BLACK);
             } else {
                 throw new ResponseException(400, "Expected: <gameID> <white|black>");
             }
         } else if(params.length == 1) {
             serverFacade.joinGame(Integer.parseInt(params[0]), null);
-            board.drawWhite();
+            GamePlay.setOrientation(BoardOrientation.WHITE);
             return String.format("You have joined game %s as an observer", params[0]);
         } else {throw new ResponseException(400, "Expected: <gameID>");}
+        Repl.setState(State.INGAME);
         return String.format("You have joined game %s as %s.", params[0], params[1]);
     }
 
+
     private String createGame(String[] params) throws ResponseException {
-        assertSignedIn();
         if(params.length >= 1) {
             return String.valueOf(serverFacade.createGame(params[0]));
         }
         throw new ResponseException(400, "Expected: <gameName>");
     }
+
 
     private String logout() throws ResponseException {
         if(serverFacade.logoutUser()){
@@ -94,6 +95,7 @@ public class PostLogin {
         }
         return "You have been signed out.";
     }
+
 
     public String help() {
         return"""
@@ -106,9 +108,5 @@ public class PostLogin {
                 """;
     }
 
-    private void assertSignedIn() throws ResponseException {
-        if (state != State.SIGNEDIN) {
-            throw new ResponseException(401, "You must be signed in to do that.");
-        }
-    }
+
 }

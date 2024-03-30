@@ -10,6 +10,7 @@ import java.util.Scanner;
 public class Repl {
     private final PreLogin preLoginClient;
     private final PostLogin postLoginClient;
+    private final GamePlay gamePlayClient;
 
     public static void setState(State state) {
         Repl.state = state;
@@ -18,6 +19,7 @@ public class Repl {
 
     public Repl(String serverUrl) {
         ServerFacade serverFacade = new ServerFacade(serverUrl);
+        gamePlayClient = new GamePlay(serverFacade);
         preLoginClient = new PreLogin(serverFacade);
         postLoginClient = new PostLogin(serverFacade);
     }
@@ -35,6 +37,9 @@ public class Repl {
             try {
                 if (state == State.SIGNEDIN) {
                     result = postLoginClient.eval(line);
+                    System.out.print(result);
+                } else if(state == State.INGAME){
+                    result = gamePlayClient.eval(line);
                     System.out.print(result);
                 } else {
                     result = preLoginClient.eval(line);
