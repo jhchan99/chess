@@ -16,9 +16,6 @@ import static java.sql.Types.NULL;
 
 public class DatabaseGame implements GameDataAccess {
 
-    // add logging to all methods
-    private static final Logger logger = Logger.getLogger(DatabaseGame.class.getName());
-
     private final ArrayList<GameData> games = new ArrayList<>();
 
     public DatabaseGame() throws DataAccessException, SQLException {
@@ -40,10 +37,8 @@ public class DatabaseGame implements GameDataAccess {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             throw new DataAccessException("get user failed");
         }
-        logger.info("Game created");
         return null;
     }
 
@@ -66,7 +61,6 @@ public class DatabaseGame implements GameDataAccess {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             throw new DataAccessException("get user failed");
         }
         return null;
@@ -94,7 +88,6 @@ public class DatabaseGame implements GameDataAccess {
                 ps.executeUpdate();
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             throw new DataAccessException("delete users failed");
         }
     }
@@ -118,7 +111,6 @@ public class DatabaseGame implements GameDataAccess {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             throw new DataAccessException("get user failed");
         }
         // return all games in games then clear games

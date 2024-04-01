@@ -1,6 +1,7 @@
 package ui;
 
 import chess.ChessBoard;
+import chess.ChessPiece;
 import chess.ChessPosition;
 import web.ServerFacade;
 
@@ -10,10 +11,12 @@ import java.util.Objects;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
+import web.WebSocketFacade;
 
 public class GamePlay {
     private final ServerFacade serverFacade;
     private static BoardOrientation orientation = BoardOrientation.WHITE;
+
     private final ChessBoard board = new ChessBoard();
 
     public static void setOrientation(BoardOrientation orientation) {
@@ -43,7 +46,6 @@ public class GamePlay {
         }
     }
 
-
     private String highlightMoves(String[] params) throws ResponseException {
         if (params.length >= 1) {
             var from = params[0];
@@ -55,10 +57,23 @@ public class GamePlay {
     }
 
     private String move(String[] params) throws ResponseException {
-        var to = params[0];
-        var coordinates = inputToPosition(to);
-        System.out.println("Coordinates: " + coordinates);
-        throw new ResponseException(400, "Expected: <to>");
+        try {
+            if (params.length >= 2) {
+                // change to ChessPosition (row, col)
+                for (var i = 0; i < params.length; i++) {
+                    var token = params[i].toLowerCase();
+                    var coord = token.split("");
+                    var x = coord[0].charAt(0) - 'a';
+                    var y = Integer.parseInt(coord[1]) - 1;
+                    ChessPosition position = new ChessPosition(x, y);
+                    System.out.println("Position: " + position);
+                }
+                return "Moved.";
+            }
+        } catch (Exception e) {
+            throw new ResponseException(400, "Invalid move.");
+        }
+        throw new ResponseException(400, "Expected: <from> <to>");
     }
 
     private ChessPosition inputToPosition(String input) {
@@ -89,7 +104,7 @@ public class GamePlay {
     public String help() {
         return"""
                 - redraw
-                - move <to>
+                - move <from> <to> (e.g. move a2 a4)
                 - highlightMoves <from>
                 - leave
                 - resign

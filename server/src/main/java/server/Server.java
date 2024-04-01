@@ -1,5 +1,7 @@
 package server;
 
+// this is also my handler
+
 import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
@@ -12,6 +14,8 @@ import spark.*;
 import java.sql.SQLException;
 import java.util.Map;
 
+
+
 public class Server {
 
     private final Service service = new Service();
@@ -22,6 +26,8 @@ public class Server {
         Spark.staticFiles.location("web");
 
         Spark.init();
+
+
 
         Spark.delete("/db", this::deleteDatabase);
         Spark.post("/user", this::registerUser);

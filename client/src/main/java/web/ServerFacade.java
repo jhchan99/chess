@@ -23,12 +23,13 @@ import java.util.Collection;
 public class ServerFacade {
 
     private final String serverUrl;
+    private static String authToken;
 
-    private String authToken;
+    public static String getAuthToken() {
+        return authToken;
+    }
 
     // websocket facade thing
-
-
 
     public ServerFacade(String serverUrl) {
         this.serverUrl = serverUrl;
