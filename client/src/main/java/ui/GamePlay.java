@@ -3,6 +3,7 @@ package ui;
 import chess.ChessBoard;
 import chess.ChessPiece;
 import chess.ChessPosition;
+import web.GameplayHandler;
 import web.ServerFacade;
 
 import java.util.Arrays;
@@ -13,8 +14,7 @@ import com.google.gson.Gson;
 import exception.ResponseException;
 import web.WebSocketFacade;
 
-public class GamePlay {
-    private final ServerFacade serverFacade;
+public class GamePlay implements GameplayHandler {
     private static BoardOrientation orientation = BoardOrientation.WHITE;
 
     private final ChessBoard board = new ChessBoard();
@@ -23,8 +23,7 @@ public class GamePlay {
         GamePlay.orientation = orientation;
     }
 
-    public GamePlay(ServerFacade serverFacade) {
-        this.serverFacade = serverFacade;
+    public GamePlay(WebSocketFacade ws) {
         this.board.resetBoard();
     }
 
@@ -55,6 +54,8 @@ public class GamePlay {
         }
         throw new ResponseException(400, "Expected: <from>");
     }
+
+    // update game
 
     private String move(String[] params) throws ResponseException {
         try {
@@ -112,4 +113,12 @@ public class GamePlay {
     }
 
 
+    @Override
+    public String updateGame(Integer gameID, ChessPosition from, ChessPosition to, String promotion) {
+        return null;
+    }
+
+    @Override
+    public void printMessage(String message) {
+    }
 }

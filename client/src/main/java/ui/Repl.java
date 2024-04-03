@@ -1,7 +1,9 @@
 package ui;
 
-import web.NotificationHandler;
+import chess.ChessPosition;
+import web.GameplayHandler;
 import web.ServerFacade;
+import web.WebSocketFacade;
 
 import javax.management.Notification;
 
@@ -10,7 +12,7 @@ import static ui.EscapeSequences.*;
 import java.util.Scanner;
 
 
-public class Repl implements NotificationHandler {
+public class Repl implements GameplayHandler {
     private final PreLogin preLoginClient;
     private final PostLogin postLoginClient;
     private final GamePlay gamePlayClient;
@@ -23,10 +25,11 @@ public class Repl implements NotificationHandler {
     private static State state = State.SIGNEDOUT;
 
     public Repl(String serverUrl) {
+        WebSocketFacade webSocketFacade = new WebSocketFacade(serverUrl, this);
         ServerFacade serverFacade = new ServerFacade(serverUrl);
-        gamePlayClient = new GamePlay(serverFacade);
+        gamePlayClient = new GamePlay(webSocketFacade);
         preLoginClient = new PreLogin(serverFacade);
-        postLoginClient = new PostLogin(serverFacade, this);
+        postLoginClient = new PostLogin(serverFacade, webSocketFacade);
     }
 
     public void run() {
@@ -62,18 +65,17 @@ public class Repl implements NotificationHandler {
         System.out.println();
     }
 
-
-
-
     private void printPrompt() {
         System.out.print("\n" + SET_BG_COLOR_BLACK + ">>> " + SET_TEXT_COLOR_WHITE);
-
     }
 
+    @Override
+    public String updateGame(Integer gameID, ChessPosition from, ChessPosition to, String promotion) {
+        return null;
+    }
 
     @Override
-    public void notify(Notification notification) {
-        System.out.println(SET_BG_COLOR_RED + notification.getMessage());
-        printPrompt();
+    public void printMessage(String message) {
+
     }
 }

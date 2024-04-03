@@ -1,12 +1,8 @@
 package ui;
 
-import chess.ChessBoard;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
-import model.GameData;
-import server.Server;
-import web.NotificationHandler;
 import web.ServerFacade;
 import web.WebSocketFacade;
 
@@ -15,14 +11,12 @@ import java.util.Objects;
 
 public class PostLogin {
     private final ServerFacade serverFacade;
-    private WebSocketFacade ws;
-    private final NotificationHandler notificationHandler;
+    private final WebSocketFacade webSocketFacade;
 
 
-
-    public PostLogin(ServerFacade serverFacade, NotificationHandler notificationHandler) {
+    public PostLogin(ServerFacade serverFacade, WebSocketFacade ws) {
         this.serverFacade = serverFacade;
-        this.notificationHandler = notificationHandler;
+        this.webSocketFacade = ws;
     }
 
 
@@ -72,11 +66,9 @@ public class PostLogin {
         if (params.length >= 2) {
             if (Objects.equals(params[1], "white")) {
                 serverFacade.joinGame(gameid, ChessGame.TeamColor.WHITE);
-                ws.joinPlayer(gameid, ChessGame.TeamColor.WHITE);
                 GamePlay.setOrientation(BoardOrientation.WHITE);
             } else if (Objects.equals(params[1], "black")) {
                 serverFacade.joinGame(gameid, ChessGame.TeamColor.BLACK);
-                ws.joinPlayer(gameid, ChessGame.TeamColor.BLACK);
                 GamePlay.setOrientation(BoardOrientation.BLACK);
             } else {
                 throw new ResponseException(400, "Expected: <gameID> <white|black>");

@@ -13,6 +13,11 @@ public class UserGameCommand {
     public UserGameCommand(String authToken) {
         this.authToken = authToken;
     }
+    public UserGameCommand(String authToken, Integer gameID, CommandType command) {
+        this.authToken = authToken;
+        this.commandType = command;
+        this.gameID = gameID;
+    }
 
     public enum CommandType {
         JOIN_PLAYER,
@@ -23,8 +28,8 @@ public class UserGameCommand {
     }
 
     protected CommandType commandType;
-
     private final String authToken;
+    private Integer gameID;
 
     public String getAuthString() {
         return authToken;
@@ -32,6 +37,10 @@ public class UserGameCommand {
 
     public CommandType getCommandType() {
         return this.commandType;
+    }
+
+    public Integer gameID() {
+        return this.gameID;
     }
 
     @Override
