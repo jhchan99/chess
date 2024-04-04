@@ -48,6 +48,11 @@ public class WebSocketFacade extends Endpoint {
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
+    public void sendMessage(UserGameCommand command) throws IOException {
+        String msg = new Gson().toJson(command);
+        session.getBasicRemote().sendText(msg);
+    }
+
     private void loadGame() {
 
     }

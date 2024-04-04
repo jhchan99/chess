@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
 import model.requests.JoinGameRequests;
+import server.websocket.WebSocketServer;
 import service.Service;
 import dataAccess.DataAccessException;
 import model.UserData;
@@ -24,6 +25,8 @@ public class Server {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
+
+        Spark.webSocket("/connect", WebSocketServer.class);
 
         Spark.init();
 

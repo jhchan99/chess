@@ -25,10 +25,10 @@ public class WebSocketServer {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
         switch (command.getCommandType()) {
             case JOIN_PLAYER -> joinPlayer(command.gameID(), command.getAuthString(), session);
-            case JOIN_OBSERVER -> joinObserver(command.gameID(), command.getAuthString(), session);
-            case LEAVE -> leave(command.gameID(), command.getAuthString());
-            case MAKE_MOVE -> makeMove(command.gameID(), command.getAuthString(), command.getMove());
-            case RESIGN -> resign(command.gameID(), command.getAuthString());
+//            case JOIN_OBSERVER -> joinObserver(command.gameID(), command.getAuthString(), session);
+//            case LEAVE -> leave(command.gameID(), command.getAuthString());
+//            case MAKE_MOVE -> makeMove(command.gameID(), command.getAuthString(), command.getMove());
+//            case RESIGN -> resign(command.gameID(), command.getAuthString());
         }
     }
 
@@ -36,7 +36,6 @@ public class WebSocketServer {
         try {
             connections.add(gameID, session, auth);
             GameData game = webSocketService.gameAccess.getGame(gameID);
-            UserData user = webSocketService.authAccess.getAuth(auth).user();
             connections.broadcast(gameID, String.format("%s joined the game", user.username()));
         }   catch (Exception ex) {
             System.out.println(ex.getMessage());

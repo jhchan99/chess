@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import exception.ResponseException;
 import web.ServerFacade;
 import web.WebSocketFacade;
+import webSocketMessages.userCommands.UserGameCommand;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -67,6 +68,7 @@ public class PostLogin {
             if (Objects.equals(params[1], "white")) {
                 serverFacade.joinGame(gameid, ChessGame.TeamColor.WHITE);
                 GamePlay.setOrientation(BoardOrientation.WHITE);
+                webSocketFacade.sendMessage();
             } else if (Objects.equals(params[1], "black")) {
                 serverFacade.joinGame(gameid, ChessGame.TeamColor.BLACK);
                 GamePlay.setOrientation(BoardOrientation.BLACK);
