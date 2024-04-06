@@ -141,7 +141,6 @@ public class Service {
             throw new DataAccessException("Game is full");
         }
 
-
         if(joinReqs.playerColor() == ChessGame.TeamColor.WHITE) {
             if(game.whiteUsername() != null){
                 throw new DataAccessException("White player is taken");

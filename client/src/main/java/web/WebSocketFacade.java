@@ -49,8 +49,12 @@ public class WebSocketFacade extends Endpoint {
     }
 
     public void sendMessage(UserGameCommand command) throws IOException {
-        String msg = new Gson().toJson(command);
-        session.getBasicRemote().sendText(msg);
+        try {
+            String msg = new Gson().toJson(command);
+            this.session.getBasicRemote().sendText(msg);
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
     }
 
     private void loadGame() {

@@ -37,7 +37,7 @@ public class WebSocketService {
 
         @Override
         public AuthData getAuth(String auth) throws DataAccessException, SQLException {
-            return null;
+            return authAccess.getAuth(auth);
         }
 
         @Override
@@ -58,7 +58,7 @@ public class WebSocketService {
 
         @Override
         public GameData getGame(int game) throws DataAccessException {
-            return null;
+            return gameAccess.getGame(game);
         }
 
         @Override

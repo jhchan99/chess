@@ -1,5 +1,7 @@
 package webSocketMessages.serverMessages;
 
+import webSocketMessages.userCommands.UserGameCommand;
+
 import java.util.Objects;
 
 /**
@@ -21,9 +23,22 @@ public class ServerMessage {
         this.serverMessageType = type;
     }
 
+    public ServerMessage(ServerMessageType type, String message) {
+        this.serverMessageType = type;
+        this.message = message;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
     public ServerMessageType getServerMessageType() {
         return this.serverMessageType;
     }
+
+    private String message;
+
+
 
 
 

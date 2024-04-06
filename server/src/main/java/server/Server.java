@@ -30,8 +30,6 @@ public class Server {
 
         Spark.init();
 
-
-
         Spark.delete("/db", this::deleteDatabase);
         Spark.post("/user", this::registerUser);
         Spark.post("/session", this::loginUser);

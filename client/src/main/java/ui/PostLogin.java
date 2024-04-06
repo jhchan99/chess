@@ -49,7 +49,6 @@ public class PostLogin {
     private String listGames() throws ResponseException {
         var games = serverFacade.listGames();
         var result = new StringBuilder();
-        var gson = new Gson();
         result.append("Games:\n");
         for (var game : games) {
             var name = game.gameName();
@@ -68,9 +67,10 @@ public class PostLogin {
             if (Objects.equals(params[1], "white")) {
                 serverFacade.joinGame(gameid, ChessGame.TeamColor.WHITE);
                 GamePlay.setOrientation(BoardOrientation.WHITE);
-                webSocketFacade.sendMessage();
+                webSocketFacade.sendMessage(new UserGameCommand(UserGameCommand.CommandType.JOIN_PLAYER, ServerFacade.getAuthToken(), gameid, ChessGame.TeamColor.WHITE));
             } else if (Objects.equals(params[1], "black")) {
                 serverFacade.joinGame(gameid, ChessGame.TeamColor.BLACK);
+                webSocketFacade.sendMessage(new UserGameCommand(UserGameCommand.CommandType.JOIN_PLAYER, ServerFacade.getAuthToken(), gameid, ChessGame.TeamColor.BLACK));
                 GamePlay.setOrientation(BoardOrientation.BLACK);
             } else {
                 throw new ResponseException(400, "Expected: <gameID> <white|black>");
