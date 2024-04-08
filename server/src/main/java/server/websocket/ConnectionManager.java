@@ -1,6 +1,8 @@
 package server.websocket;
 
+import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
+import webSocketMessages.serverMessages.ServerMessage;
 
 import javax.management.Notification;
 import java.io.IOException;
@@ -18,31 +20,20 @@ public class ConnectionManager {
 
     public void remove(Integer gameID, String auth) {
         ConcurrentHashMap<String, Connection> gameConnections = connections.get(gameID);
-        if(gameConnections != null) {
-            connections.remove(auth);
-            if(gameConnections.isEmpty()) {
-                connections.remove(gameID);
-            }
+        if (gameConnections != null) {
+            gameConnections.remove(auth);
         }
-
     }
 
-    public void broadcast(Integer excludeGameID, String notification) throws IOException {
-        var removeList = new ArrayList<Connection>();
-        for(var c : connections.values()) {
+    public void broadcast(Integer includeGameID, String notification) throws IOException {
+        for (var c : connections.values()) {
             for (var connection : c.values()) {
                 if (connection.session.isOpen()) {
-                    if (!connection.gameID.equals(excludeGameID)) {
+                    if (connection.gameID.equals(includeGameID)) {
                         connection.send(notification);
                     }
-                } else {
-                    removeList.add(connection);
                 }
             }
-        }
-        // clean up left over connections
-        for(var c : removeList) {
-            connections.remove(c.gameID);
         }
     }
 

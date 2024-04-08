@@ -32,10 +32,11 @@ public class WebSocketFacade extends Endpoint {
                 @Override
                 public void onMessage(String message) {
                     ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
+
                     switch(serverMessage.getServerMessageType()) {
                         case LOAD_GAME -> loadGame();
                         case ERROR -> System.out.println("oopsie dasie: " + serverMessage.getServerMessageType().toString());
-                        case NOTIFICATION -> printOut();
+                        case NOTIFICATION -> System.out.println("notification: " + serverMessage.getMessage());
                     }
                 }
             });
@@ -60,9 +61,10 @@ public class WebSocketFacade extends Endpoint {
     private void loadGame() {
 
     }
-
-    private void printOut() {
-        // print out server message
-    }
+//
+//    private void printOut() {
+//        // print out server message
+//
+//    }
 
 }

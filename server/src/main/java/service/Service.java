@@ -146,12 +146,12 @@ public class Service {
                 throw new DataAccessException("White player is taken");
             }
             gameAccess.addWhitePlayer(game.gameID(), user.username());
-        } else {
+        } else if (joinReqs.playerColor() == ChessGame.TeamColor.BLACK) {
             if(game.blackUsername() != null){
                 throw new DataAccessException("Black player is taken");
             }
             gameAccess.addBlackPlayer(game.gameID(), user.username());
-        } // if player wants to be a watcher
+        }
 
     }
 

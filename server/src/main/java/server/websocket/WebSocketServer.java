@@ -7,9 +7,7 @@ import dataAccess.DatabaseGame;
 import dataAccess.DatabaseUser;
 import model.AuthData;
 import model.GameData;
-import model.UserData;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
-import service.WebSocketService;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.UserGameCommand;
 
@@ -27,9 +25,7 @@ import java.util.Objects;
 public class WebSocketServer {
 
     DatabaseAuth databaseAuth = new DatabaseAuth();
-    DatabaseUser databaseUser = new DatabaseUser();
     DatabaseGame databaseGame = new DatabaseGame();
-    WebSocketService webSocketService = new WebSocketService();
     private final ConnectionManager connections = new ConnectionManager();
 
     public WebSocketServer() throws DataAccessException, SQLException {
@@ -63,8 +59,9 @@ public class WebSocketServer {
                 connections.add(gameID, session, auth);
                 connections.broadcast(gameID, String.format("%s has been added to the game", game.blackUsername()));
             } else {
-
-
+                // send error message back as server message
+                ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "You are not a player in this game");
+                session.getRemote().sendString(new Gson().toJson(serverMessage));
             }
 
         }   catch (Exception ex) {
