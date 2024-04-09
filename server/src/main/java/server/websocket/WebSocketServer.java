@@ -49,18 +49,24 @@ public class WebSocketServer {
 
             AuthData userAuth = databaseAuth.getAuth(auth);
             GameData game =  databaseGame.getGame(gameID);
+            // if teamColor is null join user as observer
+            if(teamColor == null) {
+                connections.add(gameID, session, auth);
+                connections.broadcastJoinGame(gameID, String.format("%s has been added to the game as an observer", userAuth.username()), auth);
+                return;
+            }
             // if team color is white check the game to make sure the player has been correctly added to that spot
             if (teamColor.equals(ChessGame.TeamColor.WHITE) &&
                     Objects.equals(game.whiteUsername(), userAuth.username())) {
                 connections.add(gameID, session, auth);
-                connections.broadcast(gameID, String.format("%s has been added to the game as white", game.whiteUsername()));
+                connections.broadcastJoinGame(gameID, String.format("%s has been added to the game as white", game.whiteUsername()), auth);
             } else if (teamColor.equals(ChessGame.TeamColor.BLACK) &&
             Objects.equals(game.blackUsername(), userAuth.username())) {
                 connections.add(gameID, session, auth);
-                connections.broadcast(gameID, String.format("%s has been added to the game", game.blackUsername()));
+                connections.broadcastJoinGame(gameID, String.format("%s has been added to the game as black", game.blackUsername()), auth);
             } else {
                 // send error message back as server message
-                ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "You are not a player in this game");
+                ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "You're username is wrong or you are not a player in this game");
                 session.getRemote().sendString(new Gson().toJson(serverMessage));
             }
 

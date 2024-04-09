@@ -16,6 +16,7 @@ public class UserGameCommand {
     public UserGameCommand(String authToken) {
         this.authToken = authToken;
     }
+
     public UserGameCommand(CommandType command, String authToken, Integer gameID, ChessGame.TeamColor team) {
         this.authToken = authToken;
         this.commandType = command;

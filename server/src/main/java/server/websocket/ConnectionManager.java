@@ -12,7 +12,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
+
     public final ConcurrentHashMap<Integer, ConcurrentHashMap<String, Connection>> connections = new ConcurrentHashMap<>();
+
     public void add(Integer gameID, Session session, String auth) {
         var connection = new Connection(gameID, session);
         connections.computeIfAbsent(gameID, k -> new ConcurrentHashMap<>()).put(auth, connection);
@@ -25,16 +27,18 @@ public class ConnectionManager {
         }
     }
 
-    public void broadcast(Integer includeGameID, String notification) throws IOException {
-        for (var c : connections.values()) {
-            for (var connection : c.values()) {
-                if (connection.session.isOpen()) {
-                    if (connection.gameID.equals(includeGameID)) {
-                        connection.send(notification);
-                    }
-                }
+    public void broadcastJoinGame(Integer gameID, String notification, String excludeUserByAuth) throws IOException {
+        // get the connection connected to the gameID
+        var userConnection = connections.get(gameID);
+        var msg = new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, notification)) ;
+        for(String connection : userConnection.keySet()) {
+            if (!connection.equals(excludeUserByAuth)) {
+                // send notification to users that do not match given auth
+                userConnection.get(connection).send(msg);
             }
-        }
+        };
     }
+
+
 
 }

@@ -77,6 +77,7 @@ public class PostLogin {
             }
         } else if(params.length == 1) {
             serverFacade.joinGame(Integer.parseInt(params[0]), null);
+            webSocketFacade.sendMessage(new UserGameCommand(UserGameCommand.CommandType.JOIN_PLAYER, ServerFacade.getAuthToken(), gameid, null));
             GamePlay.setOrientation(BoardOrientation.WHITE);
             return String.format("You have joined game %s as an observer", params[0]);
         } else {throw new ResponseException(400, "Expected: <gameID>");}
