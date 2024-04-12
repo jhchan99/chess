@@ -1,21 +1,18 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessPosition;
+import chess.*;
 import web.GameplayHandler;
 import web.ServerFacade;
 
 import java.io.IOException;
 import java.util.Arrays;
 
-import chess.ChessGame;
 import exception.ResponseException;
 import web.WebSocketFacade;
 import webSocketMessages.userCommands.UserGameCommand;
+import webSocketMessages.userCommands.commands.MakeMove;
 
 public class GamePlay implements GameplayHandler {
-
-    private PostLogin postLoginClient;
 
     private static BoardOrientation orientation = BoardOrientation.WHITE;
 
@@ -62,19 +59,50 @@ public class GamePlay implements GameplayHandler {
 
     // update game
 
+    private int getXCoordinate(String coord) {
+        return coord.charAt(0) - 'a';
+    }
+
+    private int getYCoordinate(String coord) {
+        return Integer.parseInt(coord.substring(1)) - 1;
+    }
+
+    private ChessPiece.PieceType getPromotionPiece(String piece) {
+        return switch (piece) {
+            case "queen" -> ChessPiece.PieceType.QUEEN;
+            case "rook" -> ChessPiece.PieceType.ROOK;
+            case "bishop" -> ChessPiece.PieceType.BISHOP;
+            case "knight" -> ChessPiece.PieceType.KNIGHT;
+            default -> null;
+        };
+    }
+
     private String move(String[] params) throws ResponseException {
         try {
+            ChessPiece.PieceType promotion = null;
+            if (params.length == 0) {
+                throw new ResponseException(400, "Expected: <from> <to>");
+            }
             if (params.length >= 2) {
                 // change to ChessPosition (row, col)
-                for (var i = 0; i < params.length; i++) {
-                    var token = params[i].toLowerCase();
-                    var coord = token.split("");
-                    var x = coord[0].charAt(0) - 'a';
-                    var y = Integer.parseInt(coord[1]) - 1;
-                    ChessPosition position = new ChessPosition(x, y);
-                    System.out.println("Position: " + position);
+                if (params[2] != null) {
+                     promotion = getPromotionPiece(params[2]);
                 }
-                return "Moved.";
+                int[] from = new int[2];
+                int[] to = new int[2];
+                for (int i = 0; i < 2; i++) {
+                    var x = getXCoordinate(params[i]);
+                    var y = getYCoordinate(params[i]);
+                    if (i == 0) {
+                        from[0] = x;
+                        from[1] = y;
+                    } else {
+                        to[0] = x;
+                        to[1] = y;
+                    }
+                }
+                var move = new ChessMove(new ChessPosition(from[0], from[1]), new ChessPosition(to[0], to[1]), promotion);
+                webSocketFacade.sendMessage(new MakeMove(ServerFacade.getAuthToken(), PostLogin.getGameID(), move));
             }
         } catch (Exception e) {
             throw new ResponseException(400, "Invalid move.");

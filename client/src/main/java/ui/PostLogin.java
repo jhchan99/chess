@@ -17,6 +17,14 @@ public class PostLogin {
     private final WebSocketFacade webSocketFacade;
 
 
+    // something to hold gameID
+    private static Integer gameID;
+
+    public static Integer getGameID() {
+        return gameID;
+    }
+
+
     public PostLogin(ServerFacade serverFacade, WebSocketFacade ws) {
         this.serverFacade = serverFacade;
         this.webSocketFacade = ws;
@@ -65,6 +73,7 @@ public class PostLogin {
 
     private String joinGame(String[] params) throws Exception {
         var gameid = Integer.parseInt(params[0]);
+        gameID = gameid;
         if (params.length >= 2) {
             if (Objects.equals(params[1], "white")) {
                 serverFacade.joinGame(gameid, ChessGame.TeamColor.WHITE);

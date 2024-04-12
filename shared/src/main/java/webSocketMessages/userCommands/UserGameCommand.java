@@ -11,7 +11,8 @@ import java.util.Objects;
  * Note: You can add to this class, but you should not alter the existing
  * methods.
  */
-public class UserGameCommand {
+
+public class UserGameCommand{
 
     public UserGameCommand(String authToken) {
         this.authToken = authToken;
@@ -26,6 +27,7 @@ public class UserGameCommand {
     }
 
     protected CommandType commandType;
+
     private final String authToken;
 
     public String getAuthString() {
@@ -35,7 +37,6 @@ public class UserGameCommand {
     public CommandType getCommandType() {
         return this.commandType;
     }
-
 
     @Override
     public boolean equals(Object o) {

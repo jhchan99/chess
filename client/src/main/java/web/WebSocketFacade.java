@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import ui.DrawBoard;
 import ui.GamePlay;
 import webSocketMessages.serverMessages.ServerMessage;
+import webSocketMessages.serverMessages.messages.LoadGame;
 import webSocketMessages.userCommands.UserGameCommand;
 
 import javax.websocket.*;
@@ -35,7 +36,7 @@ public class WebSocketFacade extends Endpoint {
                     ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
 
                     switch(serverMessage.getServerMessageType()) {
-                        case LOAD_GAME -> loadGame(serverMessage);
+                        case LOAD_GAME -> loadGame(message);
 //                        case ERROR -> System.out.println("oopsie dasie: " + serverMessage.getServerMessageType().toString() + " " + serverMessage.getMessage());
 //                        case NOTIFICATION -> System.out.println("notification: " + serverMessage.getMessage());
                     }
@@ -60,7 +61,12 @@ public class WebSocketFacade extends Endpoint {
     }
 
     // send game to game play
-    private void loadGame(ServerMessage message) {
+    private void loadGame(String msg) {
+        LoadGame loadGame = new Gson().fromJson(msg, LoadGame.class);
+        ChessGame game = loadGame.getGame();
+        ChessGame.TeamColor color = loadGame.getColor();
+
+        gameplayHandler.updateGame(game, color);
 
      }
 

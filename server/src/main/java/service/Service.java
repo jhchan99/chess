@@ -1,6 +1,7 @@
 package service;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import dataAccess.*;
 import model.AuthData;
 import model.UserData;
@@ -45,6 +46,8 @@ public class Service {
         }
     }
 
+
+//    public void makeMove(ChessMove move)
 
     public AuthData loginUser(UserData user) throws DataAccessException, SQLException {
         // Check if user exists

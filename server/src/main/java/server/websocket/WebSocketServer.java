@@ -4,7 +4,6 @@ import chess.ChessGame;
 import dataAccess.DataAccessException;
 import dataAccess.DatabaseAuth;
 import dataAccess.DatabaseGame;
-import dataAccess.DatabaseUser;
 import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
@@ -12,21 +11,18 @@ import service.Service;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.serverMessages.messages.Error;
 import webSocketMessages.serverMessages.messages.LoadGame;
-import webSocketMessages.serverMessages.messages.Notification;
-import webSocketMessages.userCommands.UserGameCommand;
 
 // this is also my websocket handler
 
 import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import webSocketMessages.userCommands.UserGameCommand;
 import webSocketMessages.userCommands.commands.JoinObserver;
 import webSocketMessages.userCommands.commands.JoinPlayer;
-import webSocketMessages.userCommands.commands.MakeMove;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Objects;
 
 @WebSocket
 public class WebSocketServer {
@@ -47,44 +43,63 @@ public class WebSocketServer {
             case JOIN_PLAYER -> joinPlayer(message, session);
             case JOIN_OBSERVER -> joinObserver(message, session);
 //            case LEAVE -> leave(command.getAuthString());
-            case MAKE_MOVE -> makeMove(message, session);
+//            case MAKE_MOVE -> makeMove(message, session);
 //            case RESIGN -> resign(command.gameID(), command.getAuthString());
         }
     }
 
-    private void makeMove(String message, Session session) {
-        try {
-            MakeMove makeMove = new Gson().fromJson(message, MakeMove.class);
-            AuthData userAuth = databaseAuth.getAuth(makeMove.getAuthString());
-            GameData game = databaseGame.getGame(makeMove.getGameID());
-            service.
+//    private void makeMove(String message, Session session) {
+//        try {
+//            MakeMove makeMove = new Gson().fromJson(message, MakeMove.class);
+//            GameData game = databaseGame.getGame(makeMove.getGameID());
+//            AuthData userAuth = databaseAuth.getAuth(makeMove.getAuthString());
+//            if (game == null) {
+//                session.getRemote().sendString(new Gson().toJson(new Error(ServerMessage.ServerMessageType.ERROR, "error: Game not found")));
+//                return;
+//            }
+//            if (userAuth == null) {
+//                session.getRemote().sendString(new Gson().toJson(new Error(ServerMessage.ServerMessageType.ERROR, "error: Auth token not found")));
+//                return;
+//            }
+//            ChessMove move = makeMove.getMove();
+//            // check if move is valid
+//            if (game.game().validMoves(move) != null) {
+//                try {
+//                    game.game().makeMove(move);
+//                    databaseGame.updateGame(game);
+//                    connections.broadcastJoinGame(game.gameID(), String.format("%s has made a move", userAuth.username()), userAuth.authToken());
+//                } catch (InvalidMoveException e) {
+//                    session.getRemote().sendString(new Gson().toJson(new Error(ServerMessage.ServerMessageType.ERROR, "error: Invalid move")));
+//                }
+//            } else {
+//                session.getRemote().sendString(new Gson().toJson(new Error(ServerMessage.ServerMessageType.ERROR, "error: Invalid move")));
+//            }
+//        } catch (DataAccessException | SQLException | IOException | InvalidMoveException e) {
+//            System.out.println(e.getMessage());
+//        }
+//    }
 
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    private void resign(Integer gameID, String auth) {
-        try {
-            AuthData userAuth = databaseAuth.getAuth(auth);
-            GameData game = databaseGame.getGame(gameID);
-            // mark game as over no more moves can be made
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-        }
-    }
-
-    private void leave(String auth) {
-        try {
-            Integer gameID = connections.getGameID(auth);
-            AuthData userAuth = databaseAuth.getAuth(auth);
-            service.removePlayer(gameID, userAuth.username());
-            connections.remove(gameID, auth);
-            connections.broadcastJoinGame(gameID, String.format("%s has left the game", userAuth.username()), auth);
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-        }
-    }
+//    private void resign(Integer gameID, String auth) {
+//        try {
+//            AuthData userAuth = databaseAuth.getAuth(auth);
+//            GameData game = databaseGame.getGame(gameID);
+//            // mark game as over no more moves can be made
+//        } catch (Exception ex) {
+//            System.out.println(ex.getMessage());
+//        }
+//    }
+//
+//    private void leave(String auth) {
+//        try {
+//            Integer gameID = connections.getGameID(auth);
+//            AuthData userAuth = databaseAuth.getAuth(auth);
+//            service.removePlayer(gameID, userAuth.username());
+//            connections.remove(gameID, auth);
+//            connections.broadcastJoinGame(gameID, String.format("%s has left the game", userAuth.username()), auth);
+//        } catch (Exception ex) {
+//            System.out.println(ex.getMessage());
+//        }
+//    }
 
     private void joinObserver(String message, Session session) {
         try {
@@ -121,9 +136,10 @@ public class WebSocketServer {
                 session.getRemote().sendString(new Gson().toJson(new Error(ServerMessage.ServerMessageType.ERROR, "error: Game not found")));
                 return;
             }
+
             AuthData userAuth = databaseAuth.getAuth(joinPlayer.getAuthString());
-            // check if game exists
             GameData game = databaseGame.getGame(joinPlayer.getGameID());
+
             // if team color is white check the game to make sure the player has been correctly added to that spot
             if (joinPlayer.getColor() == ChessGame.TeamColor.WHITE) {
                 if (game.whiteUsername() == null || !game.whiteUsername().equals(userAuth.username())) {
