@@ -2,7 +2,8 @@ package web;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import exception.ResponseException;
+import ui.DrawBoard;
+import ui.GamePlay;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.UserGameCommand;
 
@@ -34,9 +35,9 @@ public class WebSocketFacade extends Endpoint {
                     ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
 
                     switch(serverMessage.getServerMessageType()) {
-                        case LOAD_GAME -> loadGame();
-                        case ERROR -> System.out.println("oopsie dasie: " + serverMessage.getServerMessageType().toString());
-                        case NOTIFICATION -> System.out.println("notification: " + serverMessage.getMessage());
+                        case LOAD_GAME -> loadGame(serverMessage);
+//                        case ERROR -> System.out.println("oopsie dasie: " + serverMessage.getServerMessageType().toString() + " " + serverMessage.getMessage());
+//                        case NOTIFICATION -> System.out.println("notification: " + serverMessage.getMessage());
                     }
                 }
             });
@@ -58,11 +59,11 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
+    // send game to game play
+    private void loadGame(ServerMessage message) {
 
+     }
 
-    private void loadGame() {
-
-    }
 
 //
 //    private void printOut() {

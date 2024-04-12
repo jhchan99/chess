@@ -3,8 +3,8 @@ package server.websocket;
 import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import webSocketMessages.serverMessages.ServerMessage;
+import webSocketMessages.serverMessages.messages.Notification;
 
-import javax.management.Notification;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,10 +27,19 @@ public class ConnectionManager {
         }
     }
 
+    public Integer getGameID(String auth) {
+        for (Integer gameID : connections.keySet()) {
+            if (connections.get(gameID).containsKey(auth)) {
+                return gameID;
+            }
+        }
+        return null;
+    }
+
     public void broadcastJoinGame(Integer gameID, String notification, String excludeUserByAuth) throws IOException {
         // get the connection connected to the gameID
         var userConnection = connections.get(gameID);
-        var msg = new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, notification)) ;
+        var msg = new Gson().toJson(new Notification(ServerMessage.ServerMessageType.NOTIFICATION, notification)) ;
         for(String connection : userConnection.keySet()) {
             if (!connection.equals(excludeUserByAuth)) {
                 // send notification to users that do not match given auth

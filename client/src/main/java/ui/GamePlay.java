@@ -1,29 +1,34 @@
 package ui;
 
 import chess.ChessBoard;
-import chess.ChessPiece;
 import chess.ChessPosition;
 import web.GameplayHandler;
 import web.ServerFacade;
 
+import java.io.IOException;
 import java.util.Arrays;
-import java.util.Objects;
 
 import chess.ChessGame;
-import com.google.gson.Gson;
 import exception.ResponseException;
 import web.WebSocketFacade;
+import webSocketMessages.userCommands.UserGameCommand;
 
 public class GamePlay implements GameplayHandler {
+
+    private PostLogin postLoginClient;
+
     private static BoardOrientation orientation = BoardOrientation.WHITE;
 
     private final ChessBoard board = new ChessBoard();
+
+    private final WebSocketFacade webSocketFacade;
 
     public static void setOrientation(BoardOrientation orientation) {
         GamePlay.orientation = orientation;
     }
 
     public GamePlay(WebSocketFacade ws) {
+        this.webSocketFacade = ws;
         this.board.resetBoard();
     }
 
@@ -35,7 +40,7 @@ public class GamePlay implements GameplayHandler {
             return switch (cmd) {
                 case "redraw" -> redrawBoard(board);
                 case "move" -> move(params);
-                case "leave" -> leaveGame();
+//                case "leave" -> leaveGame();
 //                case "resign" -> resignGame();
 //                case "highlightMoves" -> highlightMoves(params);
                 default -> help();
@@ -45,15 +50,15 @@ public class GamePlay implements GameplayHandler {
         }
     }
 
-    private String highlightMoves(String[] params) throws ResponseException {
-        if (params.length >= 1) {
-            var from = params[0];
-            // convert from to ChessPosition position
-            var coord = from.toLowerCase().split("");
-            var x = coord[0].charAt(0) - 'a';
-        }
-        throw new ResponseException(400, "Expected: <from>");
-    }
+//    private String highlightMoves(String[] params) throws ResponseException {
+//        if (params.length >= 1) {
+//            var from = params[0];
+//            // convert from to ChessPosition position
+//            var coord = from.toLowerCase().split("");
+//            var x = coord[0].charAt(0) - 'a';
+//        }
+//        throw new ResponseException(400, "Expected: <from>");
+//    }
 
     // update game
 
@@ -85,10 +90,21 @@ public class GamePlay implements GameplayHandler {
         return new ChessPosition(x, y);
     }
 
-    private String leaveGame() {
-        Repl.setState(State.SIGNEDIN);
-        return "You left the game.";
-    }
+    // Root Client sends LEAVE
+    //
+    // If a player is leaving, then the game is updated to remove the root client. Game is updated in the database.
+    // Server sends a Notification message to all other
+    // clients in that game informing them that the root client left. This applies to both players and observers.
+
+//    private String leaveGame() {
+//        try {
+//            webSocketFacade.sendMessage(new UserGameCommand(UserGameCommand.CommandType.LEAVE, ServerFacade.getAuthToken()));
+//            Repl.setState(State.SIGNEDIN);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return "You left the game.";
+//    }
 
 
     public String redrawBoard(ChessBoard board) {
@@ -114,8 +130,8 @@ public class GamePlay implements GameplayHandler {
 
 
     @Override
-    public String updateGame(Integer gameID, ChessPosition from, ChessPosition to, String promotion) {
-        return null;
+    public void updateGame(ChessGame game, ChessGame.TeamColor team) {
+        redrawBoard(board);
     }
 
     @Override

@@ -1,11 +1,9 @@
 package ui;
 
-import chess.ChessPosition;
+import chess.ChessGame;
 import web.GameplayHandler;
 import web.ServerFacade;
 import web.WebSocketFacade;
-
-import javax.management.Notification;
 
 import static ui.EscapeSequences.*;
 
@@ -70,8 +68,8 @@ public class Repl implements GameplayHandler {
     }
 
     @Override
-    public String updateGame(Integer gameID, ChessPosition from, ChessPosition to, String promotion) {
-        return null;
+    public void updateGame(ChessGame game, ChessGame.TeamColor team) {
+        gamePlayClient.updateGame(game, team);
     }
 
     @Override

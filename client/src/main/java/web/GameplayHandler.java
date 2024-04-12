@@ -1,11 +1,11 @@
 package web;
 
 
-import chess.ChessPosition;
+import chess.ChessGame;
 
 public interface GameplayHandler {
     // update game
-    String updateGame(Integer gameID, ChessPosition from, ChessPosition to, String promotion);
+    void updateGame(ChessGame game, ChessGame.TeamColor color);
 
     // printMessage
    void printMessage(String message);

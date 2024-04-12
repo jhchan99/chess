@@ -9,7 +9,6 @@ import model.requests.JoinGameRequests;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import javax.xml.crypto.Data;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Objects;
@@ -116,7 +115,15 @@ public class Service {
             }
             // create game
             return gameAccess.createGame(game.gameName());
+    }
 
+    public void removePlayer(Integer gameID, String username) throws SQLException, DataAccessException {
+        GameData game = gameAccess.getGame(gameID);
+        if(Objects.equals(game.whiteUsername(), username)) {
+            gameAccess.addWhitePlayer(game.gameID(), null);
+        } else if(Objects.equals(game.blackUsername(), username)) {
+            gameAccess.addBlackPlayer(game.gameID(), null);
+        }
     }
 
     public void updateGame(String auth, JoinGameRequests joinReqs) throws DataAccessException, SQLException {

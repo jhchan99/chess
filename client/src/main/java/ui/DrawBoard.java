@@ -71,12 +71,12 @@ public class DrawBoard {
         }
         // Switch case for each piece type with corrected symbols for team colors
         return switch (piece.getPieceType()) {
-            case KING -> piece.getTeamColor() == ChessGame.TeamColor.BLACK ? "♚" : "♔";
-            case QUEEN -> piece.getTeamColor() == ChessGame.TeamColor.BLACK ? "♛" : "♕";
-            case ROOK -> piece.getTeamColor() == ChessGame.TeamColor.BLACK ? "♜" : "♖";
-            case BISHOP -> piece.getTeamColor() == ChessGame.TeamColor.BLACK ? "♝" : "♗";
-            case KNIGHT -> piece.getTeamColor() == ChessGame.TeamColor.BLACK ? "♞" : "♘";
-            case PAWN -> piece.getTeamColor() == ChessGame.TeamColor.BLACK ? "♟" : "♙";
+            case KING -> piece.getTeamColor() == ChessGame.TeamColor.BLACK ? "♔" : "♚";
+            case QUEEN -> piece.getTeamColor() == ChessGame.TeamColor.BLACK ? "♕" : "♛";
+            case ROOK -> piece.getTeamColor() == ChessGame.TeamColor.BLACK ? "♖" : "♜";
+            case BISHOP -> piece.getTeamColor() == ChessGame.TeamColor.BLACK ? "♗" : "♝";
+            case KNIGHT -> piece.getTeamColor() == ChessGame.TeamColor.BLACK ? "♘" : "♞";
+            case PAWN -> piece.getTeamColor() == ChessGame.TeamColor.BLACK ? "♙" : "♟";
         };
     }
 }

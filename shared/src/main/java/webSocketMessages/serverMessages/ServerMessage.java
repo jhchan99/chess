@@ -1,5 +1,7 @@
 package webSocketMessages.serverMessages;
 
+import chess.ChessGame;
+import model.GameData;
 import webSocketMessages.userCommands.UserGameCommand;
 
 import java.util.Objects;
@@ -23,23 +25,38 @@ public class ServerMessage {
         this.serverMessageType = type;
     }
 
-    public ServerMessage(ServerMessageType type, String message) {
-        this.serverMessageType = type;
-        this.message = message;
-    }
+//    public ServerMessage(ServerMessageType type, String message) {
+//        this.serverMessageType = type;
+//        this.message = message;
+//    }
+//
+//    public ServerMessage(ServerMessageType type, ChessGame game, ChessGame.TeamColor color) {
+//        this.serverMessageType = type;
+//        this.game = game;
+//        this.color = color;
+//    }
 
-    public String getMessage() {
-        return message;
-    }
+//    public String getMessage() {
+//        return message;
+//    }
 
     public ServerMessageType getServerMessageType() {
         return this.serverMessageType;
     }
 
-    private String message;
+//    private String message;
+//
+//    private ChessGame game;
+//
+//    private ChessGame.TeamColor color;
 
-
-
+//    public ChessGame.TeamColor getColor() {
+//        return color;
+//    }
+//
+//    public ChessGame getGame() {
+//        return game;
+//    }
 
 
     @Override

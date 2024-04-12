@@ -6,6 +6,8 @@ import exception.ResponseException;
 import web.ServerFacade;
 import web.WebSocketFacade;
 import webSocketMessages.userCommands.UserGameCommand;
+import webSocketMessages.userCommands.commands.JoinObserver;
+import webSocketMessages.userCommands.commands.JoinPlayer;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -67,17 +69,17 @@ public class PostLogin {
             if (Objects.equals(params[1], "white")) {
                 serverFacade.joinGame(gameid, ChessGame.TeamColor.WHITE);
                 GamePlay.setOrientation(BoardOrientation.WHITE);
-                webSocketFacade.sendMessage(new UserGameCommand(UserGameCommand.CommandType.JOIN_PLAYER, ServerFacade.getAuthToken(), gameid, ChessGame.TeamColor.WHITE));
+                webSocketFacade.sendMessage(new JoinPlayer(ServerFacade.getAuthToken(), gameid, ChessGame.TeamColor.WHITE));
             } else if (Objects.equals(params[1], "black")) {
                 serverFacade.joinGame(gameid, ChessGame.TeamColor.BLACK);
-                webSocketFacade.sendMessage(new UserGameCommand(UserGameCommand.CommandType.JOIN_PLAYER, ServerFacade.getAuthToken(), gameid, ChessGame.TeamColor.BLACK));
+                webSocketFacade.sendMessage(new JoinPlayer(ServerFacade.getAuthToken(), gameid, ChessGame.TeamColor.BLACK));
                 GamePlay.setOrientation(BoardOrientation.BLACK);
             } else {
                 throw new ResponseException(400, "Expected: <gameID> <white|black>");
             }
         } else if(params.length == 1) {
             serverFacade.joinGame(Integer.parseInt(params[0]), null);
-            webSocketFacade.sendMessage(new UserGameCommand(UserGameCommand.CommandType.JOIN_PLAYER, ServerFacade.getAuthToken(), gameid, null));
+            webSocketFacade.sendMessage(new JoinObserver(ServerFacade.getAuthToken(), gameid));
             GamePlay.setOrientation(BoardOrientation.WHITE);
             return String.format("You have joined game %s as an observer", params[0]);
         } else {throw new ResponseException(400, "Expected: <gameID>");}
