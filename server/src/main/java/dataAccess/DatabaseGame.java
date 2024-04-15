@@ -7,9 +7,6 @@ import com.google.gson.Gson;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.logging.Logger;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
@@ -21,6 +18,34 @@ public class DatabaseGame implements GameDataAccess {
     public DatabaseGame() throws DataAccessException, SQLException {
         configureDatabase();
     }
+
+    public void deleteGame(int gameId) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "DELETE FROM game WHERE gameId=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setInt(1, gameId);
+                ps.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("delete user failed");
+        }
+    }
+
+    public void updateGame(GameData game) throws DataAccessException {
+        // only update game not players
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "UPDATE game SET ChessGame=? WHERE gameId=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, new Gson().toJson(game.game()));
+                ps.setInt(2, game.gameID());
+                ps.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("update user failed");
+        }
+    }
+
+
     @Override
     public GameData createGame(String gameName) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {

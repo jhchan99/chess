@@ -5,7 +5,7 @@ import chess.ChessGame;
 
 public interface GameplayHandler {
     // update game
-    void updateGame(ChessGame game, ChessGame.TeamColor color);
+    void updateGame(ChessGame game);
 
     // printMessage
    void printMessage(String message);

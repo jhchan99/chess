@@ -31,13 +31,14 @@ public class Repl implements GameplayHandler {
     }
 
     public void run() {
-        System.out.println(" Welcome to Chess. Type 'help' for a list of commands.");
+        System.out.println(SET_BG_COLOR_WHITE);
+        System.out.println(SET_TEXT_BOLD + SET_TEXT_COLOR_DARK_GREY + "Welcome to Chess!" + RESET_TEXT_COLOR);
         System.out.print(preLoginClient.help());
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
         while (!result.equals("quit")) {
-            printPrompt();
+            PrintToInterface.printIndicator();
             String line = scanner.nextLine();
 
             try {
@@ -63,13 +64,9 @@ public class Repl implements GameplayHandler {
         System.out.println();
     }
 
-    private void printPrompt() {
-        System.out.print("\n" + SET_BG_COLOR_BLACK + ">>> " + SET_TEXT_COLOR_WHITE);
-    }
-
     @Override
-    public void updateGame(ChessGame game, ChessGame.TeamColor team) {
-        gamePlayClient.updateGame(game, team);
+    public void updateGame(ChessGame game) {
+        gamePlayClient.updateGame(game);
     }
 
     @Override

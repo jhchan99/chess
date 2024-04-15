@@ -7,7 +7,7 @@ public class Resign extends UserGameCommand {
     private final Integer gameID;
 
     public Resign(String authToken, Integer gameID) {
-        super(authToken);
+        super(authToken, CommandType.RESIGN);
         this.gameID = gameID;
     }
 

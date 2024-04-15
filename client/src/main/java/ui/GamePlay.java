@@ -7,6 +7,8 @@ import web.ServerFacade;
 import java.io.IOException;
 import java.util.Arrays;
 
+
+
 import exception.ResponseException;
 import web.WebSocketFacade;
 import webSocketMessages.userCommands.UserGameCommand;
@@ -158,7 +160,7 @@ public class GamePlay implements GameplayHandler {
 
 
     @Override
-    public void updateGame(ChessGame game, ChessGame.TeamColor team) {
+    public void updateGame(ChessGame game) {
         redrawBoard(board);
     }
 

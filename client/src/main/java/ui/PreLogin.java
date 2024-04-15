@@ -54,11 +54,7 @@ public class PreLogin {
     }
 
     public String help() {
-        return"""
-                - login <username> <password>
-                - signup <username> <password> <email>
-                - quit
-                """;
+        return PrintToInterface.printPrePostHelp();
     }
 
 

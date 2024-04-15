@@ -45,6 +45,20 @@ public class ChessGame {
         BLACK
     }
 
+    // TODO: Add methods to manage the game state
+
+    private boolean gameOver = false;
+
+    public void gameOverResign() {
+        gameOver = true;
+    }
+
+    public boolean isGameOver() {
+        return isInCheckmate(teamTurn) || isInStalemate(teamTurn) || gameOver;
+    }
+
+
+
     /**
      * Gets a valid moves for a piece at the given location
      *
@@ -137,7 +151,6 @@ public class ChessGame {
                 Collection<ChessMove> possibleMoves = piece.pieceMoves(board, newPosition);
                 // get the location of the king
                 ChessPosition kingPosition = findKing(teamColor);
-                // check if the king is in check
                 // if the kings position is in the possible moves of the piece
                 for(ChessMove move : possibleMoves) {
                     if(move.end.equals(kingPosition)) {
@@ -156,12 +169,12 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        return validMoves(findKing(teamColor)).isEmpty() && isInCheck(teamColor);
+        // no valid moves for any piece and is in check
+        return !hasValidMoves(teamColor) && isInCheck(teamColor);
     }
 
     private ChessPosition findKing(TeamColor teamColor) {
         ChessBoard board = getBoard();
-
         for(int i = 1; i <= 8; i++){
             for(int j = 1; j <= 8; j++) {
                 ChessPosition kingPosition = new ChessPosition(i, j);
@@ -175,6 +188,24 @@ public class ChessGame {
         return null;
     }
 
+    // method for checking move of every piece on the board to see if player is in stalemate or checkmate
+    private boolean hasValidMoves(TeamColor teamColor) {
+        ChessBoard board = getBoard();
+        for(int i = 1; i <= 8; i++) {
+            for(int j = 1; j <= 8; j++) {
+                ChessPosition position = new ChessPosition(i, j);
+                ChessPiece piece = board.getPiece(position);
+                if(piece != null && piece.getTeamColor() == teamColor) {
+                    if(!validMoves(position).isEmpty()) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+
     /**
      * Determines if the given team is in stalemate, which here is defined as having
      * no valid moves
@@ -183,7 +214,8 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        return validMoves(findKing(teamColor)).isEmpty() && !isInCheck(teamColor);
+        // no valid moves for any piece on that color and king is not in check
+        return !hasValidMoves(teamColor) && !isInCheck(teamColor);
     }
 
 

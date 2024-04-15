@@ -48,6 +48,23 @@ public class ConnectionManager {
         };
     }
 
+    public void sendLoadGame(Integer gameID, String message) throws IOException {
+        var userConnection = connections.get(gameID);
+        for (String connection : userConnection.keySet()) {
+            userConnection.get(connection).send(message);
+        }
+    }
+
+    // broadcast to all users in the game that game is over due to resign
+    public void broadcastGameOver(Integer gameID, String notification) throws IOException {
+        var userConnection = connections.get(gameID);
+        // convert to json
+        var msg = new Gson().toJson(new Notification(ServerMessage.ServerMessageType.NOTIFICATION, notification));
+        for (String connection : userConnection.keySet()) {
+            userConnection.get(connection).send(msg);
+        }
+    }
+
 
 
 }

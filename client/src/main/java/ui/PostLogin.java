@@ -91,7 +91,8 @@ public class PostLogin {
             webSocketFacade.sendMessage(new JoinObserver(ServerFacade.getAuthToken(), gameid));
             GamePlay.setOrientation(BoardOrientation.WHITE);
             return String.format("You have joined game %s as an observer", params[0]);
-        } else {throw new ResponseException(400, "Expected: <gameID>");}
+        }
+        // make sure player is in game
         Repl.setState(State.INGAME);
         return String.format("You have joined game %s as %s.", params[0], params[1]);
     }

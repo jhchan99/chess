@@ -18,6 +18,11 @@ public class UserGameCommand{
         this.authToken = authToken;
     }
 
+    public UserGameCommand(String authToken, CommandType command) {
+        this.authToken = authToken;
+        this.commandType = command;
+    }
+
     public enum CommandType {
         JOIN_PLAYER,
         JOIN_OBSERVER,
